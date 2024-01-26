@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => '__root__',
-        'pretty_version' => 'dev-main',
-        'version' => 'dev-main',
-        'reference' => 'dcb703b08d4853b167dbeb2b87cb752ac5b0169e',
+        'pretty_version' => 'dev-renovate-deps-update-phpmailer-phpmailer-6.x',
+        'version' => 'dev-renovate-deps-update-phpmailer-phpmailer-6.x',
+        'reference' => 'c86f686c7803278d1ac7c2a7a7a1295ec83424e8',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => 'dev-main',
-            'version' => 'dev-main',
-            'reference' => 'dcb703b08d4853b167dbeb2b87cb752ac5b0169e',
+            'pretty_version' => 'dev-renovate-deps-update-phpmailer-phpmailer-6.x',
+            'version' => 'dev-renovate-deps-update-phpmailer-phpmailer-6.x',
+            'reference' => 'c86f686c7803278d1ac7c2a7a7a1295ec83424e8',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
