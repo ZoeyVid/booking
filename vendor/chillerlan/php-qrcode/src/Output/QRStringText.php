@@ -10,7 +10,12 @@
 
 namespace chillerlan\QRCode\Output;
 
-use function array_map, implode, is_string, max, min, sprintf;
+use function array_map;
+use function implode;
+use function is_string;
+use function max;
+use function min;
+use function sprintf;
 
 /**
  *

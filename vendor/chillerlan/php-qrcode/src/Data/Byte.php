@@ -11,6 +11,7 @@
 namespace chillerlan\QRCode\Data;
 
 use chillerlan\QRCode\Common\{BitBuffer, Mode};
+
 use function chr, ord;
 
 /**

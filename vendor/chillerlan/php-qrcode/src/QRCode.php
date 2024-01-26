@@ -253,9 +253,14 @@ class QRCode{
 	protected function addMatrixModifications(QRMatrix $matrix):QRMatrix{
 
 		if($this->options->addLogoSpace){
+			$logoSpaceWidth  = $this->options->logoSpaceWidth;
+			$logoSpaceHeight = $this->options->logoSpaceHeight;
+
 			// check whether one of the dimensions was omitted
-			$logoSpaceWidth  = ($this->options->logoSpaceWidth ?? $this->options->logoSpaceHeight ?? 0);
-			$logoSpaceHeight = ($this->options->logoSpaceHeight ?? $logoSpaceWidth);
+			if($logoSpaceWidth === null || $logoSpaceHeight === null){
+				$logoSpaceWidth  = ($logoSpaceWidth ?? $logoSpaceHeight ?? 0);
+				$logoSpaceHeight = null;
+			}
 
 			$matrix->setLogoSpace(
 				$logoSpaceWidth,

@@ -286,14 +286,7 @@ class QRMatrix{
 	public function set(int $x, int $y, bool $value, int $M_TYPE):self{
 
 		if(isset($this->matrix[$y][$x])){
-			// we don't know whether the input is dark, so we remove the dark bit
-			$M_TYPE &= ~$this::IS_DARK;
-
-			if($value === true){
-				$M_TYPE |= $this::IS_DARK;
-			}
-
-			$this->matrix[$y][$x] = $M_TYPE;
+			$this->matrix[$y][$x] = (($M_TYPE & ~$this::IS_DARK) | (($value) ? $this::IS_DARK : 0));
 		}
 
 		return $this;
@@ -329,16 +322,15 @@ class QRMatrix{
 	 * Checks whether the module at ($x, $y) is of the given $M_TYPE
 	 *
 	 *   true => $value & $M_TYPE === $M_TYPE
-	 *
-	 * Also, returns false if the given coordinates are out of range.
 	 */
 	public function checkType(int $x, int $y, int $M_TYPE):bool{
+		$val = $this->get($x, $y);
 
-		if(isset($this->matrix[$y][$x])){
-			return ($this->matrix[$y][$x] & $M_TYPE) === $M_TYPE;
+		if($val === -1){
+			return false;
 		}
 
-		return false;
+		return ($val & $M_TYPE) === $M_TYPE;
 	}
 
 	/**
@@ -358,16 +350,14 @@ class QRMatrix{
 
 	/**
 	 * Checks whether the module at ($x, $y) is true (dark) or false (light)
-	 *
-	 * Also, returns false if the given coordinates are out of range.
 	 */
 	public function check(int $x, int $y):bool{
 
-		if(isset($this->matrix[$y][$x])){
-			return $this->isDark($this->matrix[$y][$x]);
+		if(!isset($this->matrix[$y][$x])){
+			return false;
 		}
 
-		return false;
+		return $this->isDark($this->matrix[$y][$x]);
 	}
 
 	/**
@@ -769,11 +759,13 @@ class QRMatrix{
 						continue;
 					}
 
-					$this->matrix[$y][$x] = $this::M_DATA;
+					$value = 0;
 
 					if($iByte < $byteCount && (($data[$iByte] >> $iBit--) & 1) === 1){
-						$this->matrix[$y][$x] |= $this::IS_DARK;
+						$value = $this::IS_DARK;
 					}
+
+					$this->matrix[$y][$x] = ($this::M_DATA | $value);
 
 					if($iBit === -1){
 						$iByte++;
@@ -800,7 +792,11 @@ class QRMatrix{
 		foreach($this->matrix as $y => $row){
 			foreach($row as $x => $val){
 				// skip non-data modules
-				if(($val & $this::M_DATA) === $this::M_DATA && $mask($x, $y)){
+				if(($val & $this::M_DATA) !== $this::M_DATA){
+					continue;
+				}
+
+				if($mask($x, $y)){
 					$this->flip($x, $y);
 				}
 			}
