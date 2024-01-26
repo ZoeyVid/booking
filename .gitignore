@@ -1,0 +1,7 @@
+*.db
+*.sqlite
+*.sqlite3
+config.php
+.idea
+favicon.webp
+composer.lock
