@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => '__root__',
-        'pretty_version' => 'dev-main',
-        'version' => 'dev-main',
-        'reference' => 'dfbfced13e6e1d2a9199330c56a9a3a93bc18edb',
+        'pretty_version' => 'dev-renovate-deps-update-pin-dependencies',
+        'version' => 'dev-renovate-deps-update-pin-dependencies',
+        'reference' => 'cd4e971e48e6bed7dbf806a5731abeefde0bb717',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => 'dev-main',
-            'version' => 'dev-main',
-            'reference' => 'dfbfced13e6e1d2a9199330c56a9a3a93bc18edb',
+            'pretty_version' => 'dev-renovate-deps-update-pin-dependencies',
+            'version' => 'dev-renovate-deps-update-pin-dependencies',
+            'reference' => 'cd4e971e48e6bed7dbf806a5731abeefde0bb717',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
