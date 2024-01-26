@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dcec1e8836984a8920e01b3e58ddb5b4",
+    "content-hash": "d9990b444c69aa18d6e6a1355707a45d",
     "packages": [
         {
             "name": "chillerlan/php-qrcode",
@@ -219,16 +219,16 @@
         },
         {
             "name": "phpmailer/phpmailer",
-            "version": "v6.9.0",
+            "version": "v6.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "934f852bfa68e59476023626461fed0c8ed6d052"
+                "reference": "039de174cd9c17a8389754d3b877a2ed22743e18"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/934f852bfa68e59476023626461fed0c8ed6d052",
-                "reference": "934f852bfa68e59476023626461fed0c8ed6d052",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/039de174cd9c17a8389754d3b877a2ed22743e18",
+                "reference": "039de174cd9c17a8389754d3b877a2ed22743e18",
                 "shasum": ""
             },
             "require": {
@@ -288,7 +288,7 @@
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
             "support": {
                 "issues": "https://github.com/PHPMailer/PHPMailer/issues",
-                "source": "https://github.com/PHPMailer/PHPMailer/tree/v6.9.0"
+                "source": "https://github.com/PHPMailer/PHPMailer/tree/v6.9.1"
             },
             "funding": [
                 {
@@ -296,7 +296,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-11-25T22:16:39+00:00"
+            "time": "2023-11-25T22:23:28+00:00"
         }
     ],
     "packages-dev": [],
