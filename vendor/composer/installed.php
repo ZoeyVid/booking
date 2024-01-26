@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'zoeyvid/booking',
-        'pretty_version' => 'dev-main',
-        'version' => 'dev-main',
-        'reference' => 'd239a1f0a7a19c4000c5c9586342e59245baf339',
+        'pretty_version' => 'dev-renovate-deps-update-phpmailer-phpmailer-6.x',
+        'version' => 'dev-renovate-deps-update-phpmailer-phpmailer-6.x',
+        'reference' => '304388c02e2fc6544f1f210e24e2d09a2ff8fcb1',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -47,9 +47,9 @@
             'dev_requirement' => false,
         ),
         'zoeyvid/booking' => array(
-            'pretty_version' => 'dev-main',
-            'version' => 'dev-main',
-            'reference' => 'd239a1f0a7a19c4000c5c9586342e59245baf339',
+            'pretty_version' => 'dev-renovate-deps-update-phpmailer-phpmailer-6.x',
+            'version' => 'dev-renovate-deps-update-phpmailer-phpmailer-6.x',
+            'reference' => '304388c02e2fc6544f1f210e24e2d09a2ff8fcb1',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
