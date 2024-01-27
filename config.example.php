@@ -32,4 +32,5 @@ $config = [
     "smimekey" => "/path/to/cert.key", // Pfad zum S/MIME Schlüssel
     "smimecertchain" => "/path/to/certchain.pem", // Pfad zur S/MIME Zertifikatskette
     "smimepass" => "123456789", // Passwort für den S/MIME Key
+    "impressum" => "Muster Mensch - Musterstraße 123 - 12345 Musterstadt - Deutschland - muster.mensch@example.org - +49 151 12345678", // Impressum
 ];

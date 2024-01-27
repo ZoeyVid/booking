@@ -3,6 +3,14 @@ include "../config.php";
 $tz = $config["tz"];
 $host = $config["host"];
 $db_path = $config["db_path"];
+$mail_host = $config["mail_host"];
+$mail_address = $config["mail_address"];
+$mail_replyto = $config["mail_replyto"];
+$mail_name = $config["mail_name"];
+$mail_password = $config["mail_password"];
+$mail_encryption = $config["mail_encryption"];
+$ennotify = $config["ennotify"];
+$mail_notify = $config["mail_notify"];
 $recaptcha_secret = $config["recaptcha_secret"];
 $recaptcha_key = $config["recaptcha_key"];
 $recaptcha_score = $config["recaptcha_score"];
@@ -10,22 +18,57 @@ $err_support = $config["err_support"];
 $event = $config["event"];
 $enyear = $config["enyear"];
 $type_year = $config["type_year"];
+$ensmime = $config["ensmime"];
+$smimecert = $config["smimecert"];
+$smimekey = $config["smimekey"];
+$smimecertchain = $config["smimecertchain"];
+$smimepass = $config["smimepass"];
 $checkpswd = $config["checkpswd"];
 $err = " Fehler! Wenn dieser Fehler öfter auftritt bitte bei " . $err_support . " melden!";
 
+use ReCaptcha\ReCaptcha;
 date_default_timezone_set($tz);
 require "../vendor/autoload.php";
-use ReCaptcha\ReCaptcha;
+use PHPMailer\PHPMailer\PHPMailer;
 
 if ($checkpswd !== "") {
+
+    $mail = new PHPMailer();
+    $mail->isSMTP();
+    $mail->setLanguage("de", "vendor/phpmailer/phpmailer/language");
+    $mail->CharSet = PHPMailer::CHARSET_UTF8;
+    if ($mail_encryption == "tls") {
+        $mail_encryption = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail_port = 587;
+    } elseif ($mail_encryption == "ssl") {
+        $mail_encryption = PHPMailer::ENCRYPTION_SMTPS;
+        $mail_port = 465;
+    } elseif ($mail_encryption == "none") {
+        $mail_port = 25;
+    } else {
+        $mail_encryption = PHPMailer::ENCRYPTION_SMTPS;
+        $mail_port = 465;
+    }
+    $mail->Host = $mail_host;
+    $mail->SMTPAuth = true;
+    $mail->Username = $mail_address;
+    $mail->Password = $mail_password;
+    $mail->Port = $mail_port;
+    if (!empty($mail_encryption)) {
+        $mail->SMTPSecure = $mail_encryption;
+    }
+    $mail->setFrom($mail_address, $mail_name);
+    $mail->addReplyTo($mail_replyto, $mail_name);
+    $mail->addAddress($mail_notify, $mail_name);
+    if ($ensmime) {
+        $mail->sign($smimecert, $smimekey, $smimepass, $smimecertchain);
+    }
 
     $db = new SQLite3($db_path);
     $db->exec("CREATE TABLE IF NOT EXISTS People (email CHAR(255) UNIQUE NOT NULL, pin CHAR(6) UNIQUE NOT NULL, vn CHAR(255) NOT NULL, nn CHAR(255) NOT NULL, year CHAR(4), bookingtoken CHAR(255) UNIQUE NOT NULL, stornotoken CHAR(255) UNIQUE NOT NULL, cf BOOLEAN NOT NULL, cdate CHAR(255))");
     $db->exec("VACUUM");
 
-    if (array_key_exists("pin", $_POST)) {
-        $vp = $_POST["pin"];
-    } elseif (array_key_exists("pin", $_GET)) {
+    if ($_SERVER["REQUEST_METHOD"] === "GET" && array_key_exists("pin", $_GET)) {
         $vp = $_GET["pin"];
     }
     ?>
@@ -36,11 +79,32 @@ if ($checkpswd !== "") {
     <title><?php echo "Reservierungskontrolle für $event"; ?></title>
     <meta charset="utf-8">
     <link rel="icon" type="image/webp" href="../favicon.webp">
-
     <script src="https://www.google.com/recaptcha/api.js?trustedtypes=true"></script>
     <script>
         function onSubmit(token) {
             document.getElementById("checker").submit();
+        }
+    </script>
+    <script>
+        function setCookie(cname, cvalue) {
+            const d = new Date();
+            d.setTime(d.getTime() + (60 * 60 * 1000));
+            let expires = "expires="+d.toUTCString();
+            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/check; Secure; SameSite=Lax";
+        }
+        function getCookie(cname) {
+            let name = cname + "=";
+            let ca = document.cookie.split(';');
+            for(let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) === 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
         }
     </script>
 
@@ -50,9 +114,19 @@ if ($checkpswd !== "") {
         <h1><?php echo "Reservierungskontrolle für $event"; ?></h1>
         <form method="post" id="checker">
             <label for="pin">PIN: </label><input value="<?php echo $vp; ?>" type="text" name="pin" id="pin" maxlength="6" required><br>
-            <label for="pswd">Passwort: </label><input value="<?php echo $_POST["pswd"]; ?>" type="password" name="pswd" id="pswd" maxlength="255" required><br>
+            <label for="pswd">Passwort: </label><input type="password" name="pswd" id="pswd" maxlength="255" required><br>
             <input class="g-recaptcha" data-sitekey="<?php echo $recaptcha_key; ?>" data-callback="onSubmit" data-action="check" type="submit" value="PIN überprüfen!">
         </form>
+    <script>
+        if (localStorage.getItem("pswd") !== "") {
+            document.getElementById("pswd").value = getCookie("pswd");
+        }
+    </script>
+    <script>
+        document.getElementById('pswd').addEventListener('input', function() {
+            setCookie("pswd", this.value)
+        });
+    </script>
 <?php if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (!(array_key_exists("pin", $_POST) && array_key_exists("pswd", $_POST) && array_key_exists("g-recaptcha-response", $_POST))) {
         $msg = "Formular fehlerhaft!" . $err;
@@ -71,8 +145,18 @@ if ($checkpswd !== "") {
             $msg = "reCAPTCHA ungültig!" . $err;
         } elseif (!is_array($query->execute()->fetchArray())) {
             $msg = "Die eingegebene PIN ist ungültig!";
+            if ($ennotify) {
+                $mail->Subject = "[" . $mail_name . "] ACHTUNG: Erfolgloser Versuch eine PIN zu überprüfen für " . $event;
+                $mail->Body = $_SERVER["REMOTE_ADDR"] . " hat erfolglos versucht eine PIN zu überprüfen (PIN ungültig)! Verwendetes Passwort: " . $pswd . " Verwendete PIN: " . $pin;
+                $mail->send();
+            }
         } elseif ($pswd !== $checkpswd) {
             $msg = "Das Passwort ist ungültig!" . $err;
+            if ($ennotify) {
+                $mail->Subject = "[" . $mail_name . "] ACHTUNG: Erfolgloser Versuch eine PIN zu überprüfen für " . $event;
+                $mail->Body = $_SERVER["REMOTE_ADDR"] . " hat erfolglos versucht eine PIN zu überprüfen (Passwort ungültig)! Verwendetes Passwort: " . $pswd . " Verwendete PIN: " . $pin;
+                $mail->send();
+            }
         } else {
              ?>
 

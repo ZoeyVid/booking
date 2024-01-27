@@ -31,12 +31,10 @@ use PHPMailer\PHPMailer\PHPMailer;
 
 if ($readpswd !== "") {
 
-    date_default_timezone_set($tz);
     $mail = new PHPMailer();
     $mail->isSMTP();
     $mail->setLanguage("de", "vendor/phpmailer/phpmailer/language");
     $mail->CharSet = PHPMailer::CHARSET_UTF8;
-
     if ($mail_encryption == "tls") {
         $mail_encryption = PHPMailer::ENCRYPTION_STARTTLS;
         $mail_port = 587;
@@ -49,7 +47,6 @@ if ($readpswd !== "") {
         $mail_encryption = PHPMailer::ENCRYPTION_SMTPS;
         $mail_port = 465;
     }
-
     $mail->Host = $mail_host;
     $mail->SMTPAuth = true;
     $mail->Username = $mail_address;
@@ -108,25 +105,17 @@ if ($readpswd !== "") {
         $responseData = json_decode($response);
         if (!$responseData->success) {
             $msg = "hCaptcha ungültig!" . $err;
-            if ($ennotify) {
-                $mail->Subject = "[" . $mail_name . "] ACHTUNG: Erfolgloser Versuch die Datenbank auszulesen für " . $event;
-                $mail->Body = $_SERVER["REMOTE_ADDR"] . " hat erfolglos versucht die Datenbank auszulesen!";
-                $mail->clearAttachments();
-                $mail->send();
-            }
         } elseif ($pswd !== $readpswd) {
             $msg = "Das Passwort ist ungültig!" . $err;
             if ($ennotify) {
                 $mail->Subject = "[" . $mail_name . "] ACHTUNG: Erfolgloser Versuch die Datenbank auszulesen für " . $event;
-                $mail->Body = $_SERVER["REMOTE_ADDR"] . " hat erfolglos versucht die Datenbank auszulesen!";
-                $mail->clearAttachments();
+                $mail->Body = $_SERVER["REMOTE_ADDR"] . " hat erfolglos versucht die Datenbank auszulesen! Verwendetes Passwort: " . $pswd;
                 $mail->send();
             }
         } else {
 
             $mail->Subject = "[" . $mail_name . "] ACHTUNG: Die Datenbank wurde ausgelesen für " . $event;
             $mail->Body = $_SERVER["REMOTE_ADDR"] . " hat erfolgreich die Datenbank ausgelesen!";
-            $mail->clearAttachments();
             if (($ennotify && $mail->send()) || !$ennotify) {
                 $results = $db->query("SELECT * FROM People"); ?>
 
