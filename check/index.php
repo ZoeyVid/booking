@@ -117,7 +117,7 @@ if (!empty($msg)) {
     echo "<p>Hinweis: <b>" . $msg . "</b></p>";
 }
 ?>
-<p><a href="https://github.com/ZoeyVid/booking">Quellcode</a> - MPL-2.0 Lizenz - integrierte Projekte/Software: PHPMailer, php-qrcode und hCaptcha/reCAPTCHA (sowie PHP mit sqlite3, curl, ctype, und openssl)</p>
+<br><a href="https://github.com/ZoeyVid/booking">Quellcode</a> - <a href="https://www.mozilla.org/en-US/MPL/2.0">MPL-2.0 Lizenz</a> - integrierte Projekte/Software: <a href="https://github.com/PHPMailer/PHPMailer">PHPMailer</a>, <a href="https://github.com/chillerlan/php-qrcode">php-qrcode</a> und hCaptcha/reCAPTCHA (sowie PHP mit sqlite3, curl, ctype, und openssl)
 </div>
 </body>
 </html>

@@ -18,6 +18,11 @@ $event = $config["event"];
 $enyear = $config["enyear"];
 $type_year = $config["type_year"];
 $readpswd = $config["readpswd"];
+$ensmime = $config["ensmime"];
+$smimecert = $config["smimecert"];
+$smimekey = $config["smimekey"];
+$smimecertchain = $config["smimecertchain"];
+$smimepass = $config["smimepass"];
 $err = " Fehler! Wenn dieser Fehler öfter auftritt bitte bei " . $err_support . " melden!";
 
 date_default_timezone_set($tz);
@@ -56,6 +61,9 @@ if ($readpswd !== "") {
     $mail->setFrom($mail_address, $mail_name);
     $mail->addReplyTo($mail_replyto, $mail_name);
     $mail->addAddress($mail_notify, $mail_name);
+    if ($ensmime) {
+        $mail->sign($smimecert, $smimekey, $smimepass, $smimecertchain);
+    }
 
     $db = new SQLite3($db_path);
     $db->exec("CREATE TABLE IF NOT EXISTS People (email CHAR(255) UNIQUE NOT NULL, pin CHAR(6) UNIQUE NOT NULL, vn CHAR(255) NOT NULL, nn CHAR(255) NOT NULL, year CHAR(4), bookingtoken CHAR(255) UNIQUE NOT NULL, stornotoken CHAR(255) UNIQUE NOT NULL, cf BOOLEAN NOT NULL, cdate CHAR(255))");
@@ -103,6 +111,7 @@ if ($readpswd !== "") {
             if ($ennotify) {
                 $mail->Subject = "[" . $mail_name . "] ACHTUNG: Erfolgloser Versuch die Datenbank auszulesen für " . $event;
                 $mail->Body = $_SERVER["REMOTE_ADDR"] . " hat erfolglos versucht die Datenbank auszulesen!";
+                $mail->clearAttachments();
                 $mail->send();
             }
         } elseif ($pswd !== $readpswd) {
@@ -110,12 +119,14 @@ if ($readpswd !== "") {
             if ($ennotify) {
                 $mail->Subject = "[" . $mail_name . "] ACHTUNG: Erfolgloser Versuch die Datenbank auszulesen für " . $event;
                 $mail->Body = $_SERVER["REMOTE_ADDR"] . " hat erfolglos versucht die Datenbank auszulesen!";
+                $mail->clearAttachments();
                 $mail->send();
             }
         } else {
 
             $mail->Subject = "[" . $mail_name . "] ACHTUNG: Die Datenbank wurde ausgelesen für " . $event;
             $mail->Body = $_SERVER["REMOTE_ADDR"] . " hat erfolgreich die Datenbank ausgelesen!";
+            $mail->clearAttachments();
             if (($ennotify && $mail->send()) || !$ennotify) {
                 $results = $db->query("SELECT * FROM People"); ?>
 
@@ -170,7 +181,7 @@ if (!empty($msg)) {
 }
 ?>
 
-<p><a href="https://github.com/ZoeyVid/booking">Quellcode</a> - MPL-2.0 Lizenz - integrierte Projekte/Software: PHPMailer, php-qrcode und hCaptcha/reCAPTCHA (sowie PHP mit sqlite3, curl, ctype, und openssl)</p>
+<br><a href="https://github.com/ZoeyVid/booking">Quellcode</a> - <a href="https://www.mozilla.org/en-US/MPL/2.0">MPL-2.0 Lizenz</a> - integrierte Projekte/Software: <a href="https://github.com/PHPMailer/PHPMailer">PHPMailer</a>, <a href="https://github.com/chillerlan/php-qrcode">php-qrcode</a> und hCaptcha/reCAPTCHA (sowie PHP mit sqlite3, curl, ctype, und openssl)
 </div>
 </body>
 </html>

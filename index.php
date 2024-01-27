@@ -22,6 +22,11 @@ $min_year = $config["min_year"];
 $max_year = $config["max_year"];
 $type_year = $config["type_year"];
 $msg_year = $config["msg_year"];
+$ensmime = $config["ensmime"];
+$smimecert = $config["smimecert"];
+$smimekey = $config["smimekey"];
+$smimecertchain = $config["smimecertchain"];
+$smimepass = $config["smimepass"];
 $err = " Bitte versuche es (in einem neuen Tab) erneut! Wenn dieser Fehler öfter auftritt bitte bei " . $err_support . " melden!";
 
 date_default_timezone_set($tz);
@@ -63,6 +68,9 @@ if (!empty($mail_encryption)) {
 }
 $mail->setFrom($mail_address, $mail_name);
 $mail->addReplyTo($mail_replyto, $mail_name);
+if ($ensmime) {
+    $mail->sign($smimecert, $smimekey, $smimepass, $smimecertchain);
+}
 
 if ($free <= 0) {
     $msg = "Es sind keine Plätze mehr frei!";
@@ -131,6 +139,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $free > 0) {
             $mail->addAddress($email, $vn . " " . $nn);
             $mail->Subject = "[" . $mail_name . "] Bestätigungslink" . $event;
             $mail->Body = "Bitte bestätige deine Reservierung hier: https://" . $host . "?bookingtoken=" . $bookingtoken;
+            $mail->clearAttachments();
 
             $query = $db->prepare('INSERT OR IGNORE INTO People (email, pin, vn, nn, year, bookingtoken, stornotoken, cf, cdate) VALUES(:email, :pin, :vn, :nn, :year, :bookingtoken, :stornotoken, false, "")');
             $query->bindValue(":email", $email);
@@ -163,12 +172,20 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && array_key_exists("bookingtoken", $_G
         $vn = $query->execute()->fetchArray()["vn"];
         $nn = $query->execute()->fetchArray()["nn"];
         $stornotoken = $query->execute()->fetchArray()["stornotoken"];
+        $year = $query->execute()->fetchArray()["year"];
+        if (empty($year)) {
+            $yeartxt = "";
+        } else {
+            $yeartxt = " (" . $type_year . ": " . $year . ")";
+        }
 
         $mail->clearAddresses();
         $mail->addAddress($email, $vn . " " . $nn);
         $mail->Subject = "[" . $mail_name . "] Reservierungsbestätigung" . $event;
         $mail->isHTML();
-        $mail->Body = 'Deine Reservierung ist bestätigt, falls du SOFORT stornieren willst, kannst du dies über den folgenden Link tun: <a href="https://' . $host . "?stornotoken=" . $stornotoken . '">https://' . $host . "?stornotoken=" . $stornotoken . "</a><br>Die PIN deiner Reservierung lautet: " . $pin . '. Bitte bring diese und den folgenden QRCode mit zum Einlass.<br><img src="' . (new QRCode())->render("https://" . $host . "/check?pin=" . $pin) . '" alt="https://' . $host . "/check?pin=" . $pin . '" style="width: 25%"/>';
+        $mail->Body = 'Deine Reservierung ist bestätigt, falls du SOFORT stornieren willst, kannst du dies über den folgenden Link tun: <a href="https://' . $host . "?stornotoken=" . $stornotoken . '">https://' . $host . "?stornotoken=" . $stornotoken . "</a><br>Die PIN deiner Reservierung lautet: " . $pin . '. Bitte bring diese und den folgenden QRCode mit zum Einlass. Bitte storniere wenn du doch nicht erscheinen willst!<br><img src="' . (new QRCode())->render("https://" . $host . "/check?pin=" . $pin) . '" alt="https://' . $host . "/check?pin=" . $pin . '" style="width: 25%"/>';
+        $mail->AltBody = "Deine Reservierung ist bestätigt, falls du SOFORT stornieren willst, kannst du dies über den folgenden Link tun: https://" . $host . "?stornotoken=" . $stornotoken . "\nDie PIN deiner Reservierung lautet: " . $pin . " Bitte bring diese und den angehängten QRCode mit zum Einlass. Bitte storniere wenn du doch nicht erscheinen willst!";
+        $mail->clearAttachments();
 
         $query = $db->prepare("UPDATE People SET cf = true WHERE bookingtoken=:bookingtoken AND cf = false;");
         $query->bindValue(":bookingtoken", $_GET["bookingtoken"]);
@@ -183,7 +200,8 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && array_key_exists("bookingtoken", $_G
                 $mail->clearAddresses();
                 $mail->addAddress($mail_notify, $mail_name);
                 $mail->Subject = "[" . $mail_name . "] neue Reservierung " . $event;
-                $mail->Body = $vn . " " . $nn . " hat resviert!";
+                $mail->Body = $vn . " " . $nn . $yeartxt . " hat resviert!";
+                $mail->clearAttachments();
                 $mail->send();
             }
         }
@@ -205,11 +223,18 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && array_key_exists("stornotoken", $_GE
         $email = $query->execute()->fetchArray()["email"];
         $vn = $query->execute()->fetchArray()["vn"];
         $nn = $query->execute()->fetchArray()["nn"];
+        $year = $query->execute()->fetchArray()["year"];
+        if (empty($year)) {
+            $yeartxt = "";
+        } else {
+            $yeartxt = " (" . $type_year . ": " . $year . ")";
+        }
 
         $mail->clearAddresses();
         $mail->addAddress($email, $vn . " " . $nn);
         $mail->Subject = "[" . $mail_name . "] Stornierungsbestätigung für " . $event;
         $mail->Body = "Deine Reservierung ist storniert, falls du doch wieder reservieren willst kannst du dies über den folgenden Link tun: https://" . $host;
+        $mail->clearAttachments();
 
         $query = $db->prepare("DELETE FROM People WHERE stornotoken=:stornotoken AND cf = true;");
         $query->bindValue(":stornotoken", $_GET["stornotoken"]);
@@ -224,7 +249,8 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && array_key_exists("stornotoken", $_GE
                 $mail->clearAddresses();
                 $mail->addAddress($mail_notify, $mail_name);
                 $mail->Subject = "[" . $mail_name . "] neue Stornierung " . $event;
-                $mail->Body = $vn . " " . $nn . " hat storniert!";
+                $mail->Body = $vn . " " . $nn . $yeartxt . " hat storniert!";
+                $mail->clearAttachments();
                 $mail->send();
             }
         }
@@ -267,7 +293,7 @@ if (!array_key_exists("bookingtoken", $_GET) && !array_key_exists("stornotoken",
         </select><br>
         <?php } ?>
         <div class="h-captcha" data-sitekey="caa8d917-b2d3-4c48-b56b-c0dcc26955d7"></div>
-        <input type="submit" value="Jetzt Reservieren">
+        <input type="submit" value="Jetzt kostenfrei Reservieren!">
     </form>
 <?php }
 if (!empty($msg)) {
@@ -279,7 +305,7 @@ if (!empty($msg)) {
         Mit "wir" bzw. "uns" ist gemeint: <?php echo $people; ?> <br>
         Die Reservierung ist nicht übertragbar und erfolgt unverbindlich, wir behalten uns vor deine Reservierung jederzeit zu stornieren. <br>
         Bitte verwende deine(n) echten Vor- bzw. Rufnamen und Nachnamen, damit wir dich am Einlass im Notfall auch ohne PIN und QRCode erkennen können! (Die Verwendung von Vor- bzw. Rufnamen des dgti-Ergänzungsausweis ist zulässig) <br>
-        Die Reservierung beinhaltet lediglich den Zugang zu Veranstaltung. <br>
+        Die Reservierung beinhaltet lediglich den unentgeltlichen Zugang zu Veranstaltung. Bitte storniere dennoch deine Reservierung falls du doch nicht kommen willst! <br>
         Deine Daten werden unserseits digital aus der Datenbank gelöscht, sobald du deine Reservierung stornierst (nicht E-Mail Benachrichtigungen)! <br>
         Auch werden all deine unserseits digital gespeicherten Daten (auch E-Mail Benachrichtigungen), sowie mögliche analoge Kopien unserseits schnellstmöglich nach der Veranstaltung oder bei Absage dieser gelöscht bzw. zerstört! <br>
         Falls wir deine Daten an staatliche Stellen weitergeben mussten, haben wir keinen Einfluss was diese mit deinen Daten tun.
@@ -296,7 +322,7 @@ if (!empty($msg)) {
         Unser Angebot enthält Links zu externen Webseiten Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich. Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf mögliche Rechtsverstöße überprüft. Rechtswidrige Inhalte waren zum Zeitpunkt der Verlinkung nicht erkennbar. Eine permanente inhaltliche Kontrolle der verlinkten Seiten ist jedoch ohne konkrete Anhaltspunkte einer Rechtsverletzung nicht zumutbar. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Links umgehend entfernen. <br>
         Die Inhalte unserer Seiten wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen. Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen. Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt. Eine diesbezügliche Haftung ist jedoch erst ab dem Zeitpunkt der Kenntnis einer konkreten Rechtsverletzung möglich. Bei Bekanntwerden von entsprechenden Rechtsverletzungen werden wir diese Inhalte umgehend entfernen.<br><br>
 
-        <a href="https://github.com/ZoeyVid/booking">Quellcode</a> - MPL-2.0 Lizenz - integrierte Projekte/Software: PHPMailer, php-qrcode und hCaptcha/reCAPTCHA (sowie PHP mit sqlite3, curl, ctype, und openssl)
+        <a href="https://github.com/ZoeyVid/booking">Quellcode</a> - <a href="https://www.mozilla.org/en-US/MPL/2.0">MPL-2.0 Lizenz</a> - integrierte Projekte/Software: <a href="https://github.com/PHPMailer/PHPMailer">PHPMailer</a>, <a href="https://github.com/chillerlan/php-qrcode">php-qrcode</a> und hCaptcha/reCAPTCHA (sowie PHP mit sqlite3, curl, ctype, und openssl)
     </p>
 </div>
 </body>
