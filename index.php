@@ -28,6 +28,7 @@ $smimekey = $config["smimekey"];
 $smimecertchain = $config["smimecertchain"];
 $smimepass = $config["smimepass"];
 $impressum = $config["impressum"];
+$default_booking_msg = $config["default_booking_msg"];
 $err = " Bitte versuche es (in einem neuen Tab) erneut! Wenn dieser Fehler öfter auftritt bitte bei " . $err_support . " melden!";
 
 date_default_timezone_set($tz);
@@ -73,6 +74,8 @@ if ($ensmime) {
     $mail->sign($smimecert, $smimekey, $smimepass, $smimecertchain);
 }
 
+$msg = $default_booking_msg;
+
 if ($free <= 0) {
     $msg = "Es sind keine Plätze mehr frei!";
 }
@@ -114,9 +117,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $free > 0 && !array_key_exists("boo
             if (!$query->execute()->fetchArray()["cf"]) {
                 $msg = "Es liegt bereits eine NICHT bestätigte Reservierung für diese E-Mail-Adresse vor, bitte Bestätige diese! Falls du keine E-Mail erhalten hast melde dich bitte bei: " . $err_support;
             } elseif ($query->execute()->fetchArray()["cf"]) {
-                $msg = "Es liegt bereits eine bestätigte Reservierung für diese E-Mai-Adresse vor, bitte nutze eine andere E-Mail-Adresse wenn du einen weiteren Platz reservieren willst! Wenn du deine Reservierung stornieren willst verwende bitte den Storno-Link in deiner Reservierungsbestätigung! Hilfe bekommst du auch bei: " . $err_support;
+                $msg = 'Es liegt bereits eine bestätigte Reservierung für diese E-Mai-Adresse vor, bitte nutze eine andere E-Mail-Adresse wenn du einen weiteren Platz reservieren willst! Wenn du deine Reservierung stornieren willst verwende bitte den Storno-Link in deiner Reservierungsbestätigung! Bitte denk daran auf der Stornierungsseite den Knopf "Stornierung bestätigen!" zu drücken! Hilfe bekommst du auch bei: ' . $err_support;
             } else {
-                $msg = "Es liegt bereits eine Reservierung für diese E-Mai-Adresse vor, bitte nutze eine andere E-Mail-Adresse wenn du einen weiteren Platz reservieren willst! Wenn du deine Reservierung stornieren willst verwende bitte den Storno-Link in deiner Reservierungsbestätigung! Hilfe bekommst du auch bei: " . $err_support;
+                $msg = 'Es liegt bereits eine Reservierung für diese E-Mai-Adresse vor, bitte nutze eine andere E-Mail-Adresse wenn du einen weiteren Platz reservieren willst! Wenn du deine Reservierung stornieren willst verwende bitte den Storno-Link in deiner Reservierungsbestätigung! Bitte denk daran auf der Stornierungsseite den Knopf "Stornierung bestätigen!" zu drücken! Hilfe bekommst du auch bei: ' . $err_support;
             }
         } else {
             do {
@@ -191,12 +194,12 @@ if (array_key_exists("bookingtoken", $_GET)) {
                        Deine Reservierung ist nicht übertragbar und erfolgt unverbindlich, wir behalten uns vor deine Reservierung jederzeit zu stornieren. <br>
                        Deine Reservierung beinhaltet lediglich den unentgeltlichen Zugang zur Veranstaltung (mögliche Getränke und/oder Speisen sind nicht enthalten)! <br>
                        <img src="' . (new QRCode())->render("https://" . $host . "/check?pin=" . $pin) . '" style="width: 25%" alt="QRCode - PIN siehe oben"/> <br>
-                       Bitte storniere, wenn du doch nicht erscheinen willst! Dies kannst du über folgenden Link tun: <a href="https://' . $host . "?stornotoken=" . $stornotoken . '">https://' . $host . "?stornotoken=" . $stornotoken . "</a>";
+                       Bitte storniere, wenn du doch nicht erscheinen willst, damit andere reservieren können! Dies kannst du kostenfrei über folgenden Link tun: <a href="https://' . $host . "?stornotoken=" . $stornotoken . '">https://' . $host . "?stornotoken=" . $stornotoken . '</a> Bitte denk daran auf der Stornierungsseite den Knopf "Stornierung kostenfrei bestätigen!" zu drücken!';
         // prettier-ignore
-        $mail->AltBody = "Deine Reservierung ist bestätigt, die PIN deiner Reservierung lautet: " . $pin . " Bitte bring ediese und/oder den folgenden QRCode (digital/analog) mit zum Einlass (falls dieser nicht (korrekt) angezeigt wird, benutze bitte einen anderen E-Mail-Client z.B. Thunderbird). \n
+        $mail->AltBody = "Deine Reservierung ist bestätigt, die PIN deiner Reservierung lautet: " . $pin . " Bitte bringe diese und/oder den folgenden QRCode (digital/analog) mit zum Einlass (falls dieser nicht (korrekt) angezeigt wird, benutze bitte einen anderen E-Mail-Client z.B. Thunderbird). \n
                           Deine Reservierung ist nicht übertragbar und erfolgt unverbindlich, wir behalten uns vor deine Reservierung jederzeit zu stornieren. \n
                           Deine Reservierung beinhaltet lediglich den unentgeltlichen Zugang zur Veranstaltung (mögliche Getränke und/oder Speisen sind nicht enthalten)! \n
-                          Bitte storniere, wenn du doch nicht erscheinen willst! Dies kannst du über folgenden Link tun: https://" . $host . "?stornotoken=" . $stornotoken;
+                          Bitte storniere, wenn du doch nicht erscheinen willst, damit andere reservieren können! Dies kannst du kostenfrei über folgenden Link tun: https://" . $host . "?stornotoken=" . $stornotoken . 'Bitte denk daran auf der Stornierungsseite den Knopf "Stornierung kostenfrei bestätigen!" zu drücken!';
 
         $query = $db->prepare("UPDATE People SET cf = true WHERE bookingtoken=:bookingtoken AND cf = false;");
         $query->bindValue(":bookingtoken", $_GET["bookingtoken"]);
@@ -212,7 +215,7 @@ if (array_key_exists("bookingtoken", $_GET)) {
                 $mail->clearAddresses();
                 $mail->addAddress($mail_notify, $mail_name);
                 $mail->Subject = "[" . $mail_name . "] neue Reservierung " . $event;
-                $mail->Body = $vn . " " . $nn . $yeartxt . " hat resviert!";
+                $mail->Body = $vn . " " . $nn . $yeartxt . " hat reserviert!";
                 $mail->send();
             }
         }
@@ -270,7 +273,7 @@ if (array_key_exists("stornotoken", $_GET)) {
             $msg = "Dieser Stornierungslink ist unbekannt!" . $err;
         }
     } else {
-        $msg = 'Bitte drücke den folgenden Knopf, um deine Stornierung zu bestätigen: <form method="post"><input type="submit" value="Stornierung bestätigen!" onClick="this.hidden=true;"></form>';
+        $msg = 'Bitte drücke den folgenden Knopf, um deine Stornierung zu bestätigen, anderenfalls wird deine Reservierung NICHT storniert: <form method="post"><input type="submit" value="Stornierung kostenfrei bestätigen!" onClick="this.hidden=true;"></form>';
     }
 }
 ?>
@@ -285,9 +288,21 @@ if (array_key_exists("stornotoken", $_GET)) {
 <body>
 <div style="text-align: center;">
     <h1><?php echo "$mail_name für $event"; ?></h1>
-    <p>Es sind noch <b><?php echo $free; ?></b> Plätze frei! <br></p>
+    <p>Es sind noch <b><?php echo $free; ?></b> Plätze frei!</p>
 <?php
 if (!array_key_exists("bookingtoken", $_GET) && !array_key_exists("stornotoken", $_GET) && $free > 0 && !$sr) { ?>
+    <details>
+        <summary>Anleitung (zum öffnen/schließen anklicken)</summary>
+        <p>
+            Bitte fülle dieses Formular (Vorname, Nachname, E-Mail<?php echo ", " . $type_year; ?>) aus und klicke auf "Jetzt kostenfrei und verbindlich reservieren". <br>
+            Danach erhältst du eine E-Mail zugesendet, öffne den darin enthaltenen Link um deine Reservierung zu bestätigen - tust du dies nicht, wird deine Reservierung nicht im System registriert. <br>
+            Nachdem du deine Reservierung bestätigt hast, wird dir eine weitere E-Mail zugesandt darin findest du einem QR-Code und eine PIN, bitte bringe beides zum Einlass mit!<br>
+            In dieser E-Mail findest du auch einen Link, mit welchem du deine Reservierung jederzeit stornieren kannst! Bitte denk daran auf der Stornierungsseite den Knopf "Stornierung kostenfrei bestätigen!" zu drücken! <br>
+            Falls du keine E-Mail erhalten hast, schaue bitte in deinem Spam-Ordner nach, falls du auch dort keine E-Mail findest, melde dich bitte bei: <?php echo $err_support; ?> <br>
+            Wenn du hilfe brauchst, melde dich bitte bei: <?php echo $err_support; ?> <br>
+        </p>
+    </details>          
+    <br>
     <form method="post">
         <label for="vn">Vorname: </label><input type="text" name="vn" id="vn" maxlength="255" required><br>
         <label for="nn">Nachname: </label><input type="text" name="nn" id="nn" maxlength="255" required><br>
@@ -302,26 +317,19 @@ if (!array_key_exists("bookingtoken", $_GET) && !array_key_exists("stornotoken",
         </select>
         <?php } ?>
         <div class="h-captcha" data-sitekey="caa8d917-b2d3-4c48-b56b-c0dcc26955d7"></div>
-        <input type="submit" value="Jetzt kostenfrei Reservieren!" onClick="this.hidden=true;">
+        <input type="submit" value="Jetzt kostenfrei und verbindlich reservieren!" onClick="this.hidden=true;">
     </form>
 <?php }
 if (!empty($msg)) {
     echo "<p>Hinweis: <b>" . $msg . "</b></p>";
 }
-if (!array_key_exists("bookingtoken", $_GET) && !array_key_exists("stornotoken", $_GET) && $free > 0 && !$sr) { ?>
-    <p>
-    Bitte fülle dieses Formular (Vorname, Nachname, E-Mail<?php echo ", " . $type_year; ?>) aus und klicke auf "Jetzt kostenfrei Reservieren". <br>
-    Danach erhältst du eine E-Mail zugesendet, öffne den darin enthaltenen Link um deine Reservierung zu bestätigen - tust du dies nicht, wird deine Reservierung nicht im System registriert. <br>
-    Nachdem du deine Reservierung bestätigt hast, wird dir eine weitere E-Mail zugesandt darin findest du einem QR-Code und eine PIN, bitte bringe beides zum Einlass mit!<br>
-    In dieser E-Mail findest du auch einen Link, mit welchem du deine Reservierung jederzeit stornieren kannst! <br>
-    </p>
-<?php }
 ?>
     <details>
-        <summary>(Rechtliche) Hinweise:</summary>
+        <summary>(Rechtliche) Hinweise (zum öffnen/schließen anklicken)</summary>
         <p>
             Mit "wir" bzw. "uns" ist gemeint: <?php echo $people; ?> <br>
-            Die Reservierung ist nicht übertragbar und erfolgt unverbindlich, wir behalten uns vor deine Reservierung jederzeit zu stornieren. <br>
+            Die Reservierung ist nicht übertragbar, verbindlich und ist jederzeit stornierbar, auch behalten wir uns vor deine Reservierung jederzeit zu stornieren. <br>
+            Bitte storniere, wenn du nicht erscheinen willst, damit andere reservieren können! <br>
             Bitte verwende deine(n) echten Vor- bzw. Rufnamen und Nachnamen, damit wir dich am Einlass im Notfall auch ohne PIN und QRCode erkennen können! (Die Verwendung von Vor- bzw. Rufnamen des dgti-Ergänzungsausweis ist zulässig) <br>
             Die Reservierung beinhaltet lediglich den unentgeltlichen Zugang zur Veranstaltung (mögliche Getränke und/oder Speisen sind nicht enthalten)! Bitte storniere dennoch deine Reservierung falls du doch nicht kommen willst! <br>
             Deine Daten werden unserseits digital aus der Datenbank gelöscht, sobald du deine Reservierung stornierst (nicht E-Mail Benachrichtigungen)! <br>
@@ -348,7 +356,3 @@ if (!array_key_exists("bookingtoken", $_GET) && !array_key_exists("stornotoken",
 </div>
 </body>
 </html>
-
-<!--
-bestätigung stornierung
-s/mime für no-reply fixen

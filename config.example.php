@@ -11,7 +11,7 @@ $config = [
     "mail_password" => "123456789", // Passwort für die E-Mail-Adresse
     "mail_encryption" => "tls", // Optionen: none (Port 25), ssl (Port 465), tls (Port 587)
     "ennotify" => true, // Sollen Benachrichtigungs-E-Mails versendet werden, wenn eine Stornierung/Reservierung eingeht
-    "mail_notify" => "treffen@24dmng.de", // An welche E-Mail sollen diese gehen?
+    "mail_notify" => "hife@example.org", // An welche E-Mail sollen diese gehen?
     "hcaptcha_secret" => "0x7abc", // hcaptcha secret für reservierung
     "hcaptcha_key" => "abc-123-cdf-456", // hcaptcha site-key für reservierung
     "recaptcha_secret" => "abc", // recaptcha v3 secret für Reservierungskontrolle
@@ -33,4 +33,5 @@ $config = [
     "smimecertchain" => "/path/to/certchain.pem", // Pfad zur S/MIME Zertifikatskette
     "smimepass" => "123456789", // Passwort für den S/MIME Key
     "impressum" => "Muster Mensch - Musterstraße 123 - 12345 Musterstadt - Deutschland - muster.mensch@example.org - +49 151 12345678", // Impressum
+    "default_booking_msg" => "", // Standard Hinweis auf der Reservierungsseite
 ];
