@@ -78,7 +78,7 @@ if ($free <= 0) {
 }
 $sr = false;
 
-if ($_SERVER["REQUEST_METHOD"] === "POST" && $free > 0) {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && $free > 0 && !array_key_exists("bookingtoken", $_GET) && !array_key_exists("stornotoken", $_GET)) {
     if (array_key_exists("email", $_POST) && array_key_exists("vn", $_POST) && array_key_exists("nn", $_POST) && array_key_exists("h-captcha-response", $_POST)) {
         $vn = $_POST["vn"];
         $nn = $_POST["nn"];
@@ -166,7 +166,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $free > 0) {
     }
 }
 
-if ($_SERVER["REQUEST_METHOD"] === "GET" && array_key_exists("bookingtoken", $_GET)) {
+if (array_key_exists("bookingtoken", $_GET)) {
     $query = $db->prepare("SELECT * FROM People WHERE bookingtoken=:bookingtoken AND cf = false");
     $query->bindValue(":bookingtoken", $_GET["bookingtoken"]);
     if (is_array($query->execute()->fetchArray())) {
@@ -227,46 +227,50 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && array_key_exists("bookingtoken", $_G
     }
 }
 
-if ($_SERVER["REQUEST_METHOD"] === "GET" && array_key_exists("stornotoken", $_GET)) {
-    $query = $db->prepare("SELECT * FROM People WHERE stornotoken=:stornotoken");
-    $query->bindValue(":stornotoken", $_GET["stornotoken"]);
-    if (is_array($query->execute()->fetchArray())) {
-        $email = $query->execute()->fetchArray()["email"];
-        $vn = $query->execute()->fetchArray()["vn"];
-        $nn = $query->execute()->fetchArray()["nn"];
-        $year = $query->execute()->fetchArray()["year"];
-        if (empty($year)) {
-            $yeartxt = "";
-        } else {
-            $yeartxt = " (" . $type_year . ": " . $year . ")";
-        }
-
-        $mail->isHTML(false);
-        $mail->clearAddresses();
-        $mail->addAddress($email, $vn . " " . $nn);
-        $mail->Subject = "[" . $mail_name . "] Stornierungsbestätigung für " . $event;
-        $mail->Body = "Deine Reservierung ist storniert, falls du doch wieder reservieren willst kannst du dies über den folgenden Link tun: https://" . $host;
-
-        $query = $db->prepare("DELETE FROM People WHERE stornotoken=:stornotoken AND cf = true;");
+if (array_key_exists("stornotoken", $_GET)) {
+    if ($_SERVER["REQUEST_METHOD"] === "POST") {
+        $query = $db->prepare("SELECT * FROM People WHERE stornotoken=:stornotoken");
         $query->bindValue(":stornotoken", $_GET["stornotoken"]);
-
-        if (!$query->execute()) {
-            $msg = "Fehler beim eintragen in die Datenbank!" . $err;
-        } elseif (!$mail->send()) {
-            $msg = "Fehler beim E-Mail Versand!" . $err;
-        } else {
-            $msg = "Deine Stornierung wurde erfolgreich bestätigt.";
-            if ($ennotify) {
-                $mail->isHTML(false);
-                $mail->clearAddresses();
-                $mail->addAddress($mail_notify, $mail_name);
-                $mail->Subject = "[" . $mail_name . "] neue Stornierung " . $event;
-                $mail->Body = $vn . " " . $nn . $yeartxt . " hat storniert!";
-                $mail->send();
+        if (is_array($query->execute()->fetchArray())) {
+            $email = $query->execute()->fetchArray()["email"];
+            $vn = $query->execute()->fetchArray()["vn"];
+            $nn = $query->execute()->fetchArray()["nn"];
+            $year = $query->execute()->fetchArray()["year"];
+            if (empty($year)) {
+                $yeartxt = "";
+            } else {
+                $yeartxt = " (" . $type_year . ": " . $year . ")";
             }
+
+            $mail->isHTML(false);
+            $mail->clearAddresses();
+            $mail->addAddress($email, $vn . " " . $nn);
+            $mail->Subject = "[" . $mail_name . "] Stornierungsbestätigung für " . $event;
+            $mail->Body = "Deine Reservierung ist storniert, falls du doch wieder reservieren willst kannst du dies über den folgenden Link tun: https://" . $host;
+
+            $query = $db->prepare("DELETE FROM People WHERE stornotoken=:stornotoken AND cf = true;");
+            $query->bindValue(":stornotoken", $_GET["stornotoken"]);
+
+            if (!$query->execute()) {
+                $msg = "Fehler beim eintragen in die Datenbank!" . $err;
+            } elseif (!$mail->send()) {
+                $msg = "Fehler beim E-Mail Versand!" . $err;
+            } else {
+                $msg = "Deine Stornierung wurde erfolgreich bestätigt.";
+                if ($ennotify) {
+                    $mail->isHTML(false);
+                    $mail->clearAddresses();
+                    $mail->addAddress($mail_notify, $mail_name);
+                    $mail->Subject = "[" . $mail_name . "] neue Stornierung " . $event;
+                    $mail->Body = $vn . " " . $nn . $yeartxt . " hat storniert!";
+                    $mail->send();
+                }
+            }
+        } else {
+            $msg = "Dieser Stornierungslink ist unbekannt!" . $err;
         }
     } else {
-        $msg = "Dieser Stornierungslink ist unbekannt!" . $err;
+        $msg = 'Bitte drücke den folgenden Knopf, um deine Stornierung zu bestätigen: <form method="post"><input type="submit" value="Stornierung bestätigen!" onClick="this.hidden=true;"></form>';
     }
 }
 ?>
@@ -309,7 +313,7 @@ if (!array_key_exists("bookingtoken", $_GET) && !array_key_exists("stornotoken",
     Bitte fülle dieses Formular (Vorname, Nachname, E-Mail<?php echo ", " . $type_year; ?>) aus und klicke auf "Jetzt kostenfrei Reservieren". <br>
     Danach erhältst du eine E-Mail zugesendet, öffne den darin enthaltenen Link um deine Reservierung zu bestätigen - tust du dies nicht, wird deine Reservierung nicht im System registriert. <br>
     Nachdem du deine Reservierung bestätigt hast, wird dir eine weitere E-Mail zugesandt darin findest du einem QR-Code und eine PIN, bitte bringe beides zum Einlass mit!<br>
-    In dieser E-Mail findest du auch einen Link, mit welchem du deine Reservierung jederzeit SOFORT stornieren kannst! <br>
+    In dieser E-Mail findest du auch einen Link, mit welchem du deine Reservierung jederzeit stornieren kannst! <br>
     </p>
 <?php }
 ?>
