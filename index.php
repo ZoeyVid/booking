@@ -135,7 +135,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $free > 0 && !array_key_exists("boo
             } while (is_array($query->execute()->fetchArray()));
 
             do {
-                $pin = rand(100000, 999999);
+                $pin = rand(0, 9) . rand(0, 9) . rand(0, 9) . rand(0, 9) . rand(0, 9) . rand(0, 9);
                 $query = $db->prepare("SELECT * FROM People WHERE pin=:pin");
                 $query->bindValue(":pin", $pin);
             } while (is_array($query->execute()->fetchArray()));
