@@ -74,6 +74,63 @@ if ($readpswd !== "") {
     <meta charset="utf-8">
     <link rel="icon" type="image/webp" href="../favicon.webp">
     <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+    <!--- from: https://www.w3schools.com/howto/howto_js_sort_table.asp --->
+    <script>
+        function sortTable(n) {
+          var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+          table = document.getElementById("table");
+          switching = true;
+          // Set the sorting direction to ascending:
+          dir = "asc";
+          /* Make a loop that will continue until
+          no switching has been done: */
+          while (switching) {
+            // Start by saying: no switching is done:
+            switching = false;
+            rows = table.rows;
+            /* Loop through all table rows (except the
+            first, which contains table headers): */
+            for (i = 1; i < (rows.length - 1); i++) {
+              // Start by saying there should be no switching:
+              shouldSwitch = false;
+              /* Get the two elements you want to compare,
+              one from current row and one from the next: */
+              x = rows[i].getElementsByTagName("TD")[n];
+              y = rows[i + 1].getElementsByTagName("TD")[n];
+              /* Check if the two rows should switch place,
+              based on the direction, asc or desc: */
+              if (dir == "asc") {
+                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                  // If so, mark as a switch and break the loop:
+                  shouldSwitch = true;
+                  break;
+                }
+              } else if (dir == "desc") {
+                if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                  // If so, mark as a switch and break the loop:
+                  shouldSwitch = true;
+                  break;
+                }
+              }
+            }
+            if (shouldSwitch) {
+              /* If a switch has been marked, make the switch
+              and mark that a switch has been done: */
+              rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+              switching = true;
+              // Each time a switch is done, increase this count by 1:
+              switchcount ++;
+            } else {
+              /* If no switching has been done AND the direction is "asc",
+              set the direction to "desc" and run the while loop again. */
+              if (switchcount == 0 && dir == "asc") {
+                dir = "desc";
+                switching = true;
+              }
+            }
+          }
+        }
+    </script>
 </head>
 <body>
 <div style="text-align: center;">
@@ -120,17 +177,17 @@ if ($readpswd !== "") {
                 $results = $db->query("SELECT * FROM People"); ?>
 
 <div style="display: flex; justify-content: center;">
-    <table style="align-self: center;">
+    <table id="table" style="align-self: center;">
         <tr>
-            <th>E-Mail</th>
-            <th>PIN</th>
-            <th>Vorname</th>
-            <th>Nachname</th>
-            <?php if ($enyear) { ?><th><?php echo $type_year; ?></th><?php } ?>
-            <th>Bookingtoken</th>
-            <th>Stronotoken</th>
-            <th>Buchung bestätigt?</th>
-            <th>bereits kontrolliert?</th>
+            <th onclick="sortTable(0)">E-Mail</th>
+            <th onclick="sortTable(1)">PIN</th>
+            <th onclick="sortTable(2)">Vorname</th>
+            <th onclick="sortTable(3)">Nachname</th>
+            <?php if ($enyear) { ?><th onclick="sortTable(4)"><?php echo $type_year; ?></th><?php } ?>
+            <th onclick="sortTable(5)">Bookingtoken</th>
+            <th onclick="sortTable(6)">Stronotoken</th>
+            <th onclick="sortTable(7)">Buchung bestätigt?</th>
+            <th onclick="sortTable(8)">bereits kontrolliert?</th>
         </tr>
         <?php while ($row = $results->fetchArray(SQLITE3_ASSOC)) { ?>
         <tr>

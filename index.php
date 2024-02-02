@@ -82,7 +82,7 @@ if ($free <= 0) {
 $sr = false;
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && $free > 0 && !array_key_exists("bookingtoken", $_GET) && !array_key_exists("stornotoken", $_GET)) {
-    if (array_key_exists("email", $_POST) && array_key_exists("vn", $_POST) && array_key_exists("nn", $_POST) && array_key_exists("h-captcha-response", $_POST)) {
+    if (array_key_exists("email", $_POST) && array_key_exists("vn", $_POST) && array_key_exists("nn", $_POST) && array_key_exists("h-captcha-response", $_POST) && (!empty($_POST["year"]) || !$enyear)) {
         $vn = $_POST["vn"];
         $nn = $_POST["nn"];
         $email = $_POST["email"];
@@ -255,7 +255,7 @@ if (array_key_exists("stornotoken", $_GET)) {
             $mail->Subject = "[" . $mail_name . "] Stornierungsbestätigung für " . $event;
             $mail->Body = "Deine Reservierung ist storniert, falls du doch wieder reservieren willst kannst du dies über den folgenden Link tun: https://" . $host;
 
-            $query = $db->prepare("DELETE FROM People WHERE stornotoken=:stornotoken AND cf = true;");
+            $query = $db->prepare("DELETE FROM People WHERE stornotoken=:stornotoken;");
             $query->bindValue(":stornotoken", $_GET["stornotoken"]);
 
             if (!$query->execute()) {
@@ -321,6 +321,7 @@ if (!array_key_exists("bookingtoken", $_GET) && !array_key_exists("stornotoken",
         </select>
         <?php } ?>
         <div class="h-captcha" data-sitekey="caa8d917-b2d3-4c48-b56b-c0dcc26955d7"></div>
+        <b>Öffne den Bestätigungslink der E-Mail, welche du nach der Reservierung bekommst. Sonst ist deine Reservierung ungültig!</b><br>
         <input type="submit" value="Jetzt kostenfrei und verbindlich reservieren!" onClick="this.hidden=true;">
     </form>
 <?php }
@@ -335,7 +336,7 @@ if (!empty($msg)) {
             Die Reservierung ist nicht übertragbar, verbindlich und ist jederzeit stornierbar, auch behalten wir uns vor deine Reservierung jederzeit zu stornieren. <br>
             Bitte storniere, wenn du nicht erscheinen willst, damit andere reservieren können! <br>
             Bitte verwende deine(n) echten Vor- bzw. Rufnamen und Nachnamen, damit wir dich am Einlass im Notfall auch ohne PIN und QRCode erkennen können! (Die Verwendung von Vor- bzw. Rufnamen des dgti-Ergänzungsausweis ist zulässig) <br>
-            Die Reservierung beinhaltet lediglich den unentgeltlichen Zugang zur Veranstaltung (mögliche Getränke und/oder Speisen sind nicht enthalten)! Bitte storniere dennoch deine Reservierung falls du doch nicht kommen willst! <br>
+            Die Reservierung beinhaltet lediglich den unentgeltlichen Zugang zur Veranstaltung (mögliche Getränke und/oder Speisen sind nicht enthalten)! Storniere dennoch deine Reservierung falls du doch nicht kommen willst! <br>
             Deine Daten werden unserseits digital aus der Datenbank gelöscht, sobald du deine Reservierung stornierst (nicht E-Mail Benachrichtigungen)! <br>
             Auch werden all deine unserseits digital gespeicherten Daten (auch E-Mail Benachrichtigungen), sowie mögliche analoge Kopien unserseits schnellstmöglich nach der Veranstaltung oder bei Absage dieser gelöscht bzw. zerstört! <br>
             Falls wir deine Daten an staatliche Stellen weitergeben mussten, haben wir keinen Einfluss was diese mit deinen Daten tun.
