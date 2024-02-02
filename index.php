@@ -170,63 +170,67 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $free > 0 && !array_key_exists("boo
 }
 
 if (array_key_exists("bookingtoken", $_GET)) {
-    $query = $db->prepare("SELECT * FROM People WHERE bookingtoken=:bookingtoken AND cf = false");
-    $query->bindValue(":bookingtoken", $_GET["bookingtoken"]);
-    if (is_array($query->execute()->fetchArray())) {
-        $email = $query->execute()->fetchArray()["email"];
-        $pin = $query->execute()->fetchArray()["pin"];
-        $vn = $query->execute()->fetchArray()["vn"];
-        $nn = $query->execute()->fetchArray()["nn"];
-        $stornotoken = $query->execute()->fetchArray()["stornotoken"];
-        $year = $query->execute()->fetchArray()["year"];
-        if (empty($year)) {
-            $yeartxt = "";
-        } else {
-            $yeartxt = " (" . $type_year . ": " . $year . ")";
-        }
+    if ($free > 0) {
+        $query = $db->prepare("SELECT * FROM People WHERE bookingtoken=:bookingtoken AND cf = false");
+        $query->bindValue(":bookingtoken", $_GET["bookingtoken"]);
+        if (is_array($query->execute()->fetchArray())) {
+            $email = $query->execute()->fetchArray()["email"];
+            $pin = $query->execute()->fetchArray()["pin"];
+            $vn = $query->execute()->fetchArray()["vn"];
+            $nn = $query->execute()->fetchArray()["nn"];
+            $stornotoken = $query->execute()->fetchArray()["stornotoken"];
+            $year = $query->execute()->fetchArray()["year"];
+            if (empty($year)) {
+                $yeartxt = "";
+            } else {
+                $yeartxt = " (" . $type_year . ": " . $year . ")";
+            }
 
-        $mail->isHTML();
-        $mail->clearAddresses();
-        $mail->addAddress($email, $vn . " " . $nn);
-        $mail->Subject = "[" . $mail_name . "] Reservierungsbestätigung" . $event;
-        // prettier-ignore
-        $mail->Body = "Deine Reservierung ist bestätigt, die PIN deiner Reservierung lautet: " . $pin . ' Bitte bringe diese und/oder den folgenden QRCode (digital/analog) mit zum Einlass (falls dieser nicht (korrekt) angezeigt wird, benutze bitte einen anderen E-Mail-Client z.B. Thunderbird). <br>
+            $mail->isHTML();
+            $mail->clearAddresses();
+            $mail->addAddress($email, $vn . " " . $nn);
+            $mail->Subject = "[" . $mail_name . "] Reservierungsbestätigung" . $event;
+            // prettier-ignore
+            $mail->Body = "Deine Reservierung ist bestätigt, die PIN deiner Reservierung lautet: " . $pin . ' Bitte bringe diese und/oder den folgenden QRCode (digital/analog) mit zum Einlass (falls dieser nicht (korrekt) angezeigt wird, benutze bitte einen anderen E-Mail-Client z.B. Thunderbird). <br>
                        Deine Reservierung ist nicht übertragbar und erfolgt unverbindlich, wir behalten uns vor deine Reservierung jederzeit zu stornieren. <br>
                        Deine Reservierung beinhaltet lediglich den unentgeltlichen Zugang zur Veranstaltung (mögliche Getränke und/oder Speisen sind nicht enthalten)! <br>
                        <img src="' . (new QRCode())->render("https://" . $host . "/check?pin=" . $pin) . '" style="width: 25%" alt="QRCode - PIN siehe oben"/> <br>
                        Bitte storniere, wenn du doch nicht erscheinen willst, damit andere reservieren können! Dies kannst du kostenfrei über folgenden Link tun: <a href="https://' . $host . "?stornotoken=" . $stornotoken . '">https://' . $host . "?stornotoken=" . $stornotoken . '</a> Bitte denk daran auf der Stornierungsseite den Knopf "Stornierung kostenfrei bestätigen!" zu drücken!';
-        // prettier-ignore
-        $mail->AltBody = "Deine Reservierung ist bestätigt, die PIN deiner Reservierung lautet: " . $pin . " Bitte bringe diese und/oder den folgenden QRCode (digital/analog) mit zum Einlass (falls dieser nicht (korrekt) angezeigt wird, benutze bitte einen anderen E-Mail-Client z.B. Thunderbird). \n
+            // prettier-ignore
+            $mail->AltBody = "Deine Reservierung ist bestätigt, die PIN deiner Reservierung lautet: " . $pin . " Bitte bringe diese und/oder den folgenden QRCode (digital/analog) mit zum Einlass (falls dieser nicht (korrekt) angezeigt wird, benutze bitte einen anderen E-Mail-Client z.B. Thunderbird). \n
                           Deine Reservierung ist nicht übertragbar und erfolgt unverbindlich, wir behalten uns vor deine Reservierung jederzeit zu stornieren. \n
                           Deine Reservierung beinhaltet lediglich den unentgeltlichen Zugang zur Veranstaltung (mögliche Getränke und/oder Speisen sind nicht enthalten)! \n
                           Bitte storniere, wenn du doch nicht erscheinen willst, damit andere reservieren können! Dies kannst du kostenfrei über folgenden Link tun: https://" . $host . "?stornotoken=" . $stornotoken . 'Bitte denk daran auf der Stornierungsseite den Knopf "Stornierung kostenfrei bestätigen!" zu drücken!';
 
-        $query = $db->prepare("UPDATE People SET cf = true WHERE bookingtoken=:bookingtoken AND cf = false;");
-        $query->bindValue(":bookingtoken", $_GET["bookingtoken"]);
+            $query = $db->prepare("UPDATE People SET cf = true WHERE bookingtoken=:bookingtoken AND cf = false;");
+            $query->bindValue(":bookingtoken", $_GET["bookingtoken"]);
 
-        if (!$query->execute()) {
-            $msg = "Fehler beim eintragen in die Datenbank!" . $err;
-        } elseif (!$mail->send()) {
-            $msg = "Fehler beim E-Mail Versand!" . $err;
+            if (!$query->execute()) {
+                $msg = "Fehler beim eintragen in die Datenbank!" . $err;
+            } elseif (!$mail->send()) {
+                $msg = "Fehler beim E-Mail Versand!" . $err;
+            } else {
+                $msg = "Deine Reservierung wurde erfolgreich bestätigt. Du hast eine PIN und einen QRCode per E-Mail erhalten.";
+                if ($ennotify) {
+                    $mail->isHTML(false);
+                    $mail->clearAddresses();
+                    $mail->addAddress($mail_notify, $mail_name);
+                    $mail->Subject = "[" . $mail_name . "] neue Reservierung " . $event;
+                    $mail->Body = $vn . " " . $nn . $yeartxt . " hat reserviert!";
+                    $mail->send();
+                }
+            }
         } else {
-            $msg = "Deine Reservierung wurde erfolgreich bestätigt. Du hast eine PIN und einen QRCode per E-Mail erhalten.";
-            if ($ennotify) {
-                $mail->isHTML(false);
-                $mail->clearAddresses();
-                $mail->addAddress($mail_notify, $mail_name);
-                $mail->Subject = "[" . $mail_name . "] neue Reservierung " . $event;
-                $mail->Body = $vn . " " . $nn . $yeartxt . " hat reserviert!";
-                $mail->send();
+            $query = $db->prepare("SELECT * FROM People WHERE bookingtoken=:bookingtoken AND cf = true");
+            $query->bindValue(":bookingtoken", $_GET["bookingtoken"]);
+            if (is_array($query->execute()->fetchArray())) {
+                $msg = "Deine Reservierung ist bereits bestätigt!";
+            } else {
+                $msg = "Dieser Bestätigungslink ist unbekannt!" . $err;
             }
         }
     } else {
-        $query = $db->prepare("SELECT * FROM People WHERE bookingtoken=:bookingtoken AND cf = true");
-        $query->bindValue(":bookingtoken", $_GET["bookingtoken"]);
-        if (is_array($query->execute()->fetchArray())) {
-            $msg = "Deine Reservierung ist bereits bestätigt!";
-        } else {
-            $msg = "Dieser Bestätigungslink ist unbekannt!" . $err;
-        }
+        $msg = "Deine Reservierung kann nicht bestätigt werden! Es sind keine Plätze mehr frei! Bitte versuche es später erneut, falls eine andere Person storniert hat!";
     }
 }
 
