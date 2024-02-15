@@ -169,9 +169,9 @@ if ($checkpswd !== "") {
             <th>bereits kontrolliert?</th>
         </tr>
         <tr>
-            <td><?php echo $query->execute()->fetchArray()["vn"]; ?></td>
-            <td><?php echo $query->execute()->fetchArray()["nn"]; ?></td>
-            <?php if ($enyear) { ?><td><?php echo $query->execute()->fetchArray()["year"]; ?></td><?php } ?>
+            <td><?php echo htmlspecialchars($query->execute()->fetchArray()["vn"]); ?></td>
+            <td><?php echo htmlspecialchars($query->execute()->fetchArray()["nn"]); ?></td>
+            <?php if ($enyear) { ?><td><?php echo htmlspecialchars($query->execute()->fetchArray()["year"]); ?></td><?php } ?>
             <td><?php if (empty($query->execute()->fetchArray()["cdate"])) {
                 echo "Noch nicht kontrolliert!";
             } else {

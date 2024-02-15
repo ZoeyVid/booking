@@ -191,11 +191,11 @@ if ($readpswd !== "") {
         </tr>
         <?php while ($row = $results->fetchArray(SQLITE3_ASSOC)) { ?>
         <tr>
-            <td><?php echo $row["email"]; ?></td>
+            <td><?php echo htmlspecialchars($row["email"]); ?></td>
             <td><?php echo $row["pin"]; ?></td>
-            <td><?php echo $row["vn"]; ?></td>
-            <td><?php echo $row["nn"]; ?></td>
-            <?php if ($enyear) { ?><td><?php echo $row["year"]; ?></td><?php } ?>
+            <td><?php echo htmlspecialchars($row["vn"]); ?></td>
+            <td><?php echo htmlspecialchars($row["nn"]); ?></td>
+            <?php if ($enyear) { ?><td><?php echo htmlspecialchars($row["year"]); ?></td><?php } ?>
             <td><?php echo '<a href="https://' . $host . "?bookingtoken=" . $row["bookingtoken"] . '">' . $row["bookingtoken"] . "</a>"; ?></td>
             <td><?php echo '<a href="https://' . $host . "?stornotoken=" . $row["stornotoken"] . '">' . $row["stornotoken"] . "</a>"; ?></td>
             <td><?php if ($row["cf"]) {
