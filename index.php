@@ -286,6 +286,10 @@ if (array_key_exists("stornotoken", $_GET)) {
 <head>
     <title><?php echo "$mail_name für $event"; ?></title>
     <meta charset="utf-8">
+    <meta name="application-name" content="Reservierungssystem">
+    <meta name="author" content="<?php echo $people; ?>">
+    <meta name="description" content="<?php echo "$mail_name für $event"; ?>">
+    <meta name="keywords" content="Reservierungssystem">
     <link rel="icon" type="image/webp" href="/favicon.webp">
     <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
 </head>
