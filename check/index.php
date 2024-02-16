@@ -68,8 +68,25 @@ if ($checkpswd !== "") {
     $db->exec("CREATE TABLE IF NOT EXISTS People (email CHAR(255) UNIQUE NOT NULL, pin CHAR(6) UNIQUE NOT NULL, vn CHAR(255) NOT NULL, nn CHAR(255) NOT NULL, year CHAR(4), bookingtoken CHAR(255) UNIQUE NOT NULL, stornotoken CHAR(255) UNIQUE NOT NULL, cf BOOLEAN NOT NULL, cdate CHAR(255))");
     $db->exec("VACUUM");
 
+    session_start([
+        "use_strict_mode" => true,
+        "cookie_path" => "/check",
+        "cookie_secure" => true,
+        "cookie_httponly" => true,
+        "cookie_samesite" => "Strict",
+        "cookie_domain" => $host,
+    ]);
+
     if ($_SERVER["REQUEST_METHOD"] === "GET" && array_key_exists("pin", $_GET)) {
         $vp = $_GET["pin"];
+    } else {
+        $vp = "";
+    }
+
+    if ($_SERVER["REQUEST_METHOD"] === "POST" && array_key_exists("pswd", $_POST)) {
+        $_SESSION["pswd"] = $_POST["pswd"];
+    } elseif (empty($_SESSION["pswd"])) {
+        $_SESSION["pswd"] = "";
     }
     ?>
 
@@ -85,48 +102,15 @@ if ($checkpswd !== "") {
             document.getElementById("checker").submit();
         }
     </script>
-    <script>
-        function setCookie(cname, cvalue) {
-            const d = new Date();
-            d.setTime(d.getTime() + (60 * 60 * 1000));
-            let expires = "expires="+d.toUTCString();
-            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/check; Secure; SameSite=Lax";
-        }
-        function getCookie(cname) {
-            let name = cname + "=";
-            let ca = document.cookie.split(';');
-            for(let i = 0; i < ca.length; i++) {
-                let c = ca[i];
-                while (c.charAt(0) === ' ') {
-                    c = c.substring(1);
-                }
-                if (c.indexOf(name) === 0) {
-                    return c.substring(name.length, c.length);
-                }
-            }
-            return "";
-        }
-    </script>
-
 </head>
 <body>
 <div style="text-align: center;">
         <h1><?php echo "Reservierungskontrolle für $event"; ?></h1>
         <form method="post" id="checker">
             <label for="pin">PIN: </label><input value="<?php echo $vp; ?>" type="text" name="pin" id="pin" maxlength="6" required><br>
-            <label for="pswd">Passwort: </label><input type="password" name="pswd" id="pswd" maxlength="255" required><br>
+            <label for="pswd">Passwort: </label><input value="<?php echo $_SESSION["pswd"]; ?>" type="password" name="pswd" id="pswd" maxlength="255" required><br>
             <input class="g-recaptcha" data-sitekey="<?php echo $recaptcha_key; ?>" data-callback="onSubmit" data-action="check" type="submit" value="PIN überprüfen!">
         </form>
-    <script>
-        if (localStorage.getItem("pswd") !== "") {
-            document.getElementById("pswd").value = getCookie("pswd");
-        }
-    </script>
-    <script>
-        document.getElementById('pswd').addEventListener('input', function() {
-            setCookie("pswd", this.value)
-        });
-    </script>
 <?php if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (!(array_key_exists("pin", $_POST) && array_key_exists("pswd", $_POST) && array_key_exists("g-recaptcha-response", $_POST))) {
         $msg = "Formular fehlerhaft!" . $err;
@@ -147,14 +131,14 @@ if ($checkpswd !== "") {
             $msg = "Die eingegebene PIN ist ungültig!";
             if ($ennotify) {
                 $mail->Subject = "[" . $mail_name . "] ACHTUNG: Erfolgloser Versuch eine PIN zu überprüfen für " . $event;
-                $mail->Body = $_SERVER["REMOTE_ADDR"] . " hat erfolglos versucht eine PIN zu überprüfen (PIN ungültig)! Verwendetes Passwort: " . $pswd . " Verwendete PIN: " . $pin;
+                $mail->Body = $_SERVER["REMOTE_ADDR"] . " hat erfolglos versucht eine PIN zu überprüfen (PIN ungültig)!\nVerwendetes Passwort: " . $pswd . "\nVerwendete PIN: " . $pin;
                 $mail->send();
             }
         } elseif ($pswd !== $checkpswd) {
             $msg = "Das Passwort ist ungültig!" . $err;
             if ($ennotify) {
                 $mail->Subject = "[" . $mail_name . "] ACHTUNG: Erfolgloser Versuch eine PIN zu überprüfen für " . $event;
-                $mail->Body = $_SERVER["REMOTE_ADDR"] . " hat erfolglos versucht eine PIN zu überprüfen (Passwort ungültig)! Verwendetes Passwort: " . $pswd . " Verwendete PIN: " . $pin;
+                $mail->Body = $_SERVER["REMOTE_ADDR"] . " hat erfolglos versucht eine PIN zu überprüfen (Passwort ungültig)!\nVerwendetes Passwort: " . $pswd . "\nVerwendete PIN: " . $pin;
                 $mail->send();
             }
         } else {
@@ -201,7 +185,7 @@ if (!empty($msg)) {
     echo "<p>Hinweis: <b>" . $msg . "</b></p>";
 }
 ?>
-<br><a href="https://github.com/ZoeyVid/booking">Quellcode</a> - <a href="https://www.mozilla.org/en-US/MPL/2.0">MPL-2.0 Lizenz</a> - integrierte Projekte/Software: <a href="https://github.com/PHPMailer/PHPMailer">PHPMailer</a>, <a href="https://github.com/chillerlan/php-qrcode">php-qrcode</a> und hCaptcha/reCAPTCHA (sowie PHP mit sqlite3, curl, ctype, und openssl)
+<br><a href="https://github.com/ZoeyVid/booking">Quellcode</a> - <a href="https://www.mozilla.org/en-US/MPL/2.0">MPL-2.0 Lizenz</a> - integrierte Projekte/Software: <a href="https://github.com/PHPMailer/PHPMailer">PHPMailer</a>, <a href="https://github.com/chillerlan/php-qrcode">php-qrcode</a> und hCaptcha/reCAPTCHA (sowie PHP mit sqlite3, curl, ctype, openssl und session)
 </div>
 </body>
 </html>
