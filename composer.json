@@ -10,7 +10,8 @@
     "ext-sqlite3": "*",
     "ext-curl": "*",
     "ext-ctype": "*",
-    "ext-openssl": "*"
+    "ext-openssl": "*",
+    "ext-session": "*"
   },
   "license": "MPL-2.0",
   "version": "v0.1.0",

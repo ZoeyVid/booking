@@ -1,5 +1,5 @@
 <?php
-include "../config.php";
+include "../../config.php";
 $tz = $config["tz"];
 $host = $config["host"];
 $db_path = $config["db_path"];
@@ -28,7 +28,7 @@ $err = " Fehler! Wenn dieser Fehler öfter auftritt bitte bei " . $err_support .
 
 use ReCaptcha\ReCaptcha;
 date_default_timezone_set($tz);
-require "../vendor/autoload.php";
+require "../../vendor/autoload.php";
 use PHPMailer\PHPMailer\PHPMailer;
 
 if ($checkpswd !== "") {

@@ -1,5 +1,5 @@
 <?php
-include "config.php";
+include "../config.php";
 $tz = $config["tz"];
 $max = $config["max"];
 $host = $config["host"];
@@ -32,7 +32,7 @@ $default_booking_msg = $config["default_booking_msg"];
 $err = " Bitte versuche es (in einem neuen Tab) erneut! Wenn dieser Fehler öfter auftritt bitte bei " . $err_support . " melden!";
 
 date_default_timezone_set($tz);
-require "vendor/autoload.php";
+require "../vendor/autoload.php";
 $db = new SQLite3($db_path);
 $db->exec("CREATE TABLE IF NOT EXISTS People (email CHAR(255) UNIQUE NOT NULL, pin CHAR(6) UNIQUE NOT NULL, vn CHAR(255) NOT NULL, nn CHAR(255) NOT NULL, year CHAR(4), bookingtoken CHAR(255) UNIQUE NOT NULL, stornotoken CHAR(255) UNIQUE NOT NULL, cf BOOLEAN NOT NULL, cdate CHAR(255))");
 $db->exec("VACUUM");

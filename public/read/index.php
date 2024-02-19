@@ -1,5 +1,5 @@
 <?php
-include "../config.php";
+include "../../config.php";
 $tz = $config["tz"];
 $host = $config["host"];
 $db_path = $config["db_path"];
@@ -26,7 +26,7 @@ $smimepass = $config["smimepass"];
 $err = " Fehler! Wenn dieser Fehler öfter auftritt bitte bei " . $err_support . " melden!";
 
 date_default_timezone_set($tz);
-require "../vendor/autoload.php";
+require "../../vendor/autoload.php";
 use PHPMailer\PHPMailer\PHPMailer;
 
 if ($readpswd !== "") {
