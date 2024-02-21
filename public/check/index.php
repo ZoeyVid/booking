@@ -95,6 +95,15 @@ if ($checkpswd !== "") {
 <head>
     <title><?php echo "Reservierungskontrolle für $event"; ?></title>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        html
+        {
+            -ms-text-size-adjust: none;
+            -webkit-text-size-adjust: none;
+            text-size-adjust: none;
+        }
+    </style>
     <link rel="icon" type="image/webp" href="../favicon.webp">
     <script src="https://www.google.com/recaptcha/api.js?trustedtypes=true"></script>
     <script>

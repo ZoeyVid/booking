@@ -286,6 +286,15 @@ if (array_key_exists("stornotoken", $_GET)) {
 <head>
     <title><?php echo "$mail_name für $event"; ?></title>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        html
+        {
+            -ms-text-size-adjust: none;
+            -webkit-text-size-adjust: none;
+            text-size-adjust: none;
+        }
+    </style>
     <meta name="application-name" content="Reservierungssystem">
     <meta name="author" content="<?php echo $people; ?>">
     <meta name="description" content="<?php echo "$mail_name für $event"; ?>">

@@ -72,6 +72,15 @@ if ($readpswd !== "") {
 <head>
     <title><?php echo "Datenbankausgabe für $event"; ?></title>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        html
+        {
+            -ms-text-size-adjust: none;
+            -webkit-text-size-adjust: none;
+            text-size-adjust: none;
+        }
+    </style>
     <link rel="icon" type="image/webp" href="../favicon.webp">
     <script src="https://js.hcaptcha.com/1/api.js?hl=de&render=onload&recaptchacompat=off" async defer></script>
     <!--- from: https://www.w3schools.com/howto/howto_js_sort_table.asp --->
