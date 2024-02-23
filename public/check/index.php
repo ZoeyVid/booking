@@ -77,16 +77,14 @@ if ($checkpswd !== "") {
         "cookie_domain" => $host,
     ]);
 
+    if (!array_key_exists("auth", $_SESSION)) {
+        $_SESSION["auth"] = false;
+    }
+
     if ($_SERVER["REQUEST_METHOD"] === "GET" && array_key_exists("pin", $_GET)) {
         $vp = $_GET["pin"];
     } else {
         $vp = "";
-    }
-
-    if ($_SERVER["REQUEST_METHOD"] === "POST" && array_key_exists("pswd", $_POST)) {
-        $_SESSION["pswd"] = $_POST["pswd"];
-    } elseif (empty($_SESSION["pswd"])) {
-        $_SESSION["pswd"] = "";
     }
     ?>
 
@@ -114,17 +112,16 @@ if ($checkpswd !== "") {
 </head>
 <body>
 <div style="text-align: center;">
-        <h1><?php echo "Reservierungskontrolle für $event"; ?></h1>
-        <form method="post" id="checker">
-            <label for="pin">PIN: </label><input value="<?php echo $vp; ?>" type="text" name="pin" id="pin" maxlength="6" required><br>
-            <label for="pswd">Passwort: </label><input value="<?php echo $_SESSION["pswd"]; ?>" type="password" name="pswd" id="pswd" maxlength="255" required><br>
-            <input class="g-recaptcha" data-sitekey="<?php echo $recaptcha_key; ?>" data-callback="onSubmit" data-action="check" type="submit" value="PIN überprüfen!">
-        </form>
+    <h1><?php echo "Reservierungskontrolle für $event"; ?></h1>
 <?php if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    if (!(array_key_exists("pin", $_POST) && array_key_exists("pswd", $_POST) && array_key_exists("g-recaptcha-response", $_POST))) {
+    if (!(array_key_exists("pin", $_POST) && (array_key_exists("pswd", $_POST) || $_SESSION["auth"]) && array_key_exists("g-recaptcha-response", $_POST))) {
         $msg = "Formular fehlerhaft!" . $err;
     } else {
-        $pswd = $_POST["pswd"];
+        if (!array_key_exists("pswd", $_POST)) {
+            $pswd = "Session Authentifizierung";
+        } else {
+            $pswd = $_POST["pswd"];
+        }
         $pin = $_POST["pin"];
         $recaptcha = new ReCaptcha($recaptcha_secret);
         $responseData = $recaptcha
@@ -143,25 +140,27 @@ if ($checkpswd !== "") {
                 $mail->Body = $_SERVER["REMOTE_ADDR"] . " hat erfolglos versucht eine PIN zu überprüfen (PIN ungültig)!\nVerwendetes Passwort: " . $pswd . "\nVerwendete PIN: " . $pin;
                 $mail->send();
             }
-        } elseif ($pswd !== $checkpswd) {
-            $msg = "Das Passwort ist ungültig!" . $err;
+        } elseif ($pswd !== $checkpswd && !$_SESSION["auth"]) {
+            $msg = "Das Passwort oder die Session ist ungültig!" . $err;
             if ($ennotify) {
                 $mail->Subject = "[" . $mail_name . "] ACHTUNG: Erfolgloser Versuch eine PIN zu überprüfen für " . $event;
-                $mail->Body = $_SERVER["REMOTE_ADDR"] . " hat erfolglos versucht eine PIN zu überprüfen (Passwort ungültig)!\nVerwendetes Passwort: " . $pswd . "\nVerwendete PIN: " . $pin;
+                $mail->Body = $_SERVER["REMOTE_ADDR"] . " hat erfolglos versucht eine PIN zu überprüfen (Passwort/Session ungültig)!\nVerwendetes Passwort: " . $pswd . "\nVerwendete PIN: " . $pin;
                 $mail->send();
             }
         } else {
-             ?>
+            $_SESSION["auth"] = true; ?>
 
 <div style="display: flex; justify-content: center;">
     <table style="align-self: center;">
         <tr>
+            <th>PIN</th>
             <th>Vorname</th>
             <th>Nachname</th>
             <?php if ($enyear) { ?><th><?php echo $type_year; ?></th><?php } ?>
             <th>bereits kontrolliert?</th>
         </tr>
         <tr>
+            <td><?php echo $query->execute()->fetchArray()["pin"]; ?></td>
             <td><?php echo htmlspecialchars($query->execute()->fetchArray()["vn"]); ?></td>
             <td><?php echo htmlspecialchars($query->execute()->fetchArray()["nn"]); ?></td>
             <?php if ($enyear) { ?><td><?php echo htmlspecialchars($query->execute()->fetchArray()["year"]); ?></td><?php } ?>
@@ -186,7 +185,15 @@ if (!$query->execute()) {
 
         }
     }
-}
+} ?>
+    <form method="post" id="checker">
+        <label for="pin">PIN: </label><input value="<?php echo $vp; ?>" type="text" name="pin" id="pin" maxlength="6" required><br>
+        <?php if (!$_SESSION["auth"]) { ?>
+            <label for="pswd">Passwort: </label><input type="password" name="pswd" id="pswd" maxlength="255" required><br>
+        <?php } ?>
+        <input class="g-recaptcha" data-sitekey="<?php echo $recaptcha_key; ?>" data-callback="onSubmit" data-action="check" type="submit" value="PIN überprüfen!">
+    </form>
+<?php
 } else {
     $msg = "Die Reservierungskontrolle ist deaktiviert!";
 }
