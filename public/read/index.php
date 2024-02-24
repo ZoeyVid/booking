@@ -33,7 +33,7 @@ if ($readpswd !== "") {
 
     $mail = new PHPMailer();
     $mail->isSMTP();
-    $mail->setLanguage("de", "vendor/phpmailer/phpmailer/language");
+    $mail->setLanguage("de", "../../vendor/phpmailer/phpmailer/language");
     $mail->CharSet = PHPMailer::CHARSET_UTF8;
     if ($mail_encryption == "tls") {
         $mail_encryption = PHPMailer::ENCRYPTION_STARTTLS;
@@ -74,8 +74,7 @@ if ($readpswd !== "") {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        html
-        {
+        html {
             -ms-text-size-adjust: none;
             -webkit-text-size-adjust: none;
             text-size-adjust: none;
@@ -147,12 +146,12 @@ if ($readpswd !== "") {
         <?php if (!(array_key_exists("pswd", $_POST) && array_key_exists("h-captcha-response", $_POST))) { ?>
         <form method="post">
             <label for="pswd">Passwort: </label><input type="password" name="pswd" id="pswd" maxlength="255" required><br>
-            <div class="h-captcha" data-sitekey="caa8d917-b2d3-4c48-b56b-c0dcc26955d7"></div>
-            <input type="submit" value="Datenbank auslesen!">
+            <div class="h-captcha" data-sitekey="<?php echo $hcaptcha_key; ?>"></div>
+            <input type="submit" value="Datenbank auslesen!" onClick="this.hidden=true;">
         </form>
         <?php } ?>
 <?php if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    if (!(array_key_exists("pswd", $_POST) && array_key_exists("h-captcha-response", $_POST))) {
+    if (!array_key_exists("pswd", $_POST) && array_key_exists("h-captcha-response", $_POST)) {
         $msg = "Formular fehlerhaft!" . $err;
     } else {
         $pswd = $_POST["pswd"];
@@ -179,7 +178,6 @@ if ($readpswd !== "") {
                 $mail->send();
             }
         } else {
-
             $mail->Subject = "[" . $mail_name . "] ACHTUNG: Die Datenbank wurde ausgelesen für " . $event;
             $mail->Body = $_SERVER["REMOTE_ADDR"] . " hat erfolgreich die Datenbank ausgelesen!";
             if (($ennotify && $mail->send()) || !$ennotify) {
@@ -219,6 +217,8 @@ if ($readpswd !== "") {
             } ?></td>
         </tr>
         <?php }
+            } else {
+                $msg = "Fehler!" . $err;
             }
             ?>
     </table>

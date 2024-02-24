@@ -35,7 +35,7 @@ if ($checkpswd !== "") {
 
     $mail = new PHPMailer();
     $mail->isSMTP();
-    $mail->setLanguage("de", "vendor/phpmailer/phpmailer/language");
+    $mail->setLanguage("de", "../../vendor/phpmailer/phpmailer/language");
     $mail->CharSet = PHPMailer::CHARSET_UTF8;
     if ($mail_encryption == "tls") {
         $mail_encryption = PHPMailer::ENCRYPTION_STARTTLS;
@@ -95,8 +95,7 @@ if ($checkpswd !== "") {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        html
-        {
+        html {
             -ms-text-size-adjust: none;
             -webkit-text-size-adjust: none;
             text-size-adjust: none;
@@ -114,7 +113,7 @@ if ($checkpswd !== "") {
 <div style="text-align: center;">
     <h1><?php echo "Reservierungskontrolle für $event"; ?></h1>
 <?php if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    if (!(array_key_exists("pin", $_POST) && (array_key_exists("pswd", $_POST) || $_SESSION["auth"]) && array_key_exists("g-recaptcha-response", $_POST))) {
+    if (!array_key_exists("pin", $_POST) || !(array_key_exists("pswd", $_POST) || $_SESSION["auth"]) || !array_key_exists("g-recaptcha-response", $_POST)) {
         $msg = "Formular fehlerhaft!" . $err;
     } else {
         if (!array_key_exists("pswd", $_POST)) {
@@ -191,7 +190,8 @@ if (!$query->execute()) {
         <?php if (!$_SESSION["auth"]) { ?>
             <label for="pswd">Passwort: </label><input type="password" name="pswd" id="pswd" maxlength="255" required><br>
         <?php } ?>
-        <input class="g-recaptcha" data-sitekey="<?php echo $recaptcha_key; ?>" data-callback="onSubmit" data-action="check" type="submit" value="PIN überprüfen!">
+        <input class="g-recaptcha" data-sitekey="<?php echo $recaptcha_key; ?>" data-callback="onSubmit" data-action="check" type="submit" value="PIN überprüfen!" onClick="this.hidden=true;">
+        <input type="reset" value="Eingabe löschen!">
     </form>
 <?php
 } else {

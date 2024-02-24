@@ -44,7 +44,7 @@ use chillerlan\QRCode\QRCode;
 use PHPMailer\PHPMailer\PHPMailer;
 $mail = new PHPMailer();
 $mail->isSMTP();
-$mail->setLanguage("de", "vendor/phpmailer/phpmailer/language");
+$mail->setLanguage("de", "../vendor/phpmailer/phpmailer/language");
 $mail->CharSet = PHPMailer::CHARSET_UTF8;
 
 if ($mail_encryption == "tls") {
@@ -143,7 +143,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $free > 0 && !array_key_exists("boo
             $mail->isHTML(false);
             $mail->clearAddresses();
             $mail->addAddress($email, $vn . " " . $nn);
-            $mail->Subject = "[" . $mail_name . "] Bestätigungslink" . $event;
+            $mail->Subject = "[" . $mail_name . "] Bestätigungslink für " . $event;
             $mail->Body = "Bitte bestätige deine Reservierung hier: https://" . $host . "?bookingtoken=" . $bookingtoken;
 
             $query = $db->prepare('INSERT OR IGNORE INTO People (email, pin, vn, nn, year, bookingtoken, stornotoken, cf, cdate) VALUES(:email, :pin, :vn, :nn, :year, :bookingtoken, :stornotoken, false, "")');
@@ -169,7 +169,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $free > 0 && !array_key_exists("boo
     }
 }
 
-if (array_key_exists("bookingtoken", $_GET)) {
+if (array_key_exists("bookingtoken", $_GET) && $_SERVER["REQUEST_METHOD"] === "GET") {
     if ($free > 0) {
         $query = $db->prepare("SELECT * FROM People WHERE bookingtoken=:bookingtoken AND cf = false");
         $query->bindValue(":bookingtoken", $_GET["bookingtoken"]);
@@ -189,7 +189,7 @@ if (array_key_exists("bookingtoken", $_GET)) {
             $mail->isHTML();
             $mail->clearAddresses();
             $mail->addAddress($email, $vn . " " . $nn);
-            $mail->Subject = "[" . $mail_name . "] Reservierungsbestätigung" . $event;
+            $mail->Subject = "[" . $mail_name . "] Reservierungsbestätigung für " . $event;
             // prettier-ignore
             $mail->Body = "Deine Reservierung ist bestätigt, die PIN deiner Reservierung lautet: " . $pin . ' Bitte bringe diese und/oder den folgenden QRCode (digital/analog) mit zum Einlass (falls dieser nicht (korrekt) angezeigt wird, benutze bitte einen anderen E-Mail-Client z.B. Thunderbird). <br>
                        Deine Reservierung ist nicht übertragbar und erfolgt unverbindlich, wir behalten uns vor deine Reservierung jederzeit zu stornieren. <br>
@@ -215,7 +215,7 @@ if (array_key_exists("bookingtoken", $_GET)) {
                     $mail->isHTML(false);
                     $mail->clearAddresses();
                     $mail->addAddress($mail_notify, $mail_name);
-                    $mail->Subject = "[" . $mail_name . "] neue Reservierung " . $event;
+                    $mail->Subject = "[" . $mail_name . "] neue Reservierung für " . $event;
                     $mail->Body = $vn . " " . $nn . $yeartxt . " hat reserviert!";
                     $mail->send();
                 }
@@ -268,7 +268,7 @@ if (array_key_exists("stornotoken", $_GET)) {
                     $mail->isHTML(false);
                     $mail->clearAddresses();
                     $mail->addAddress($mail_notify, $mail_name);
-                    $mail->Subject = "[" . $mail_name . "] neue Stornierung " . $event;
+                    $mail->Subject = "[" . $mail_name . "] neue Stornierung für " . $event;
                     $mail->Body = $vn . " " . $nn . $yeartxt . " hat storniert!";
                     $mail->send();
                 }
@@ -288,8 +288,7 @@ if (array_key_exists("stornotoken", $_GET)) {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        html
-        {
+        html {
             -ms-text-size-adjust: none;
             -webkit-text-size-adjust: none;
             text-size-adjust: none;
@@ -333,7 +332,7 @@ if (!array_key_exists("bookingtoken", $_GET) && !array_key_exists("stornotoken",
             } ?>
         </select>
         <?php } ?>
-        <div class="h-captcha" data-sitekey="caa8d917-b2d3-4c48-b56b-c0dcc26955d7"></div>
+        <div class="h-captcha" data-sitekey="<?php echo $hcaptcha_key; ?>"></div>
         <b>Öffne den Bestätigungslink der E-Mail, welche du nach der Reservierung bekommst. Sonst ist deine Reservierung ungültig!</b><br>
         <input type="submit" value="Jetzt kostenfrei und verbindlich reservieren!" onClick="this.hidden=true;">
     </form>
