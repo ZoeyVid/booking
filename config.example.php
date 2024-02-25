@@ -26,7 +26,8 @@ $config = [
     "type_year" => "Geburtsjahr", // Was ist es für ein Jahr?
     "msg_year" => "Welches Jahr?", // Wie soll das Jahr abgefragt werden?
     "checkpswd" => "sehrs1chererespasswort", // Passwort für die Reservierungskontrolle - leer = aus
-    "readpswd" => "nochviels1chererespasswort", // Passwort für das lessen aller Reservierungen - leer = aus
+    "readpswd" => "nochviels1chererespasswort", // Passwort für das lesen aller Reservierungen - leer = aus
+    "sendpswd" => "nochsehrviels1chererespassw0rt", // Passwort für das versenden von E-Mails - leer = aus
     "ensmime" => "true", // Soll S/MIME aktiviert werden?
     "smimecert" => "/path/to/cert.crt", // Pfad zum S/MIME Zertifikat
     "smimekey" => "/path/to/cert.key", // Pfad zum S/MIME Schlüssel

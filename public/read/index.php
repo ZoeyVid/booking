@@ -178,6 +178,7 @@ if ($readpswd !== "") {
                 $mail->send();
             }
         } else {
+
             $mail->Subject = "[" . $mail_name . "] ACHTUNG: Die Datenbank wurde ausgelesen für " . $event;
             $mail->Body = $_SERVER["REMOTE_ADDR"] . " hat erfolgreich die Datenbank ausgelesen!";
             if (($ennotify && $mail->send()) || !$ennotify) {

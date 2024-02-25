@@ -191,7 +191,6 @@ if (!$query->execute()) {
             <label for="pswd">Passwort: </label><input type="password" name="pswd" id="pswd" maxlength="255" required><br>
         <?php } ?>
         <input class="g-recaptcha" data-sitekey="<?php echo $recaptcha_key; ?>" data-callback="onSubmit" data-action="check" type="submit" value="PIN überprüfen!" onClick="this.hidden=true;">
-        <input type="reset" value="Eingabe löschen!">
     </form>
 <?php
 } else {
