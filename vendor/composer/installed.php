@@ -3,7 +3,7 @@
         'name' => 'zoeyvid/booking',
         'pretty_version' => 'v0.1.0',
         'version' => '0.1.0.0',
-        'reference' => NULL,
+        'reference' => null,
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'chillerlan/php-qrcode' => array(
-            'pretty_version' => '5.0.1',
-            'version' => '5.0.1.0',
-            'reference' => 'e81ed39ca3c94357aa021c7525fa9ffb451018d1',
+            'pretty_version' => '5.0.2',
+            'version' => '5.0.2.0',
+            'reference' => 'da5bdb82c8755f54de112b271b402aaa8df53269',
             'type' => 'library',
             'install_path' => __DIR__ . '/../chillerlan/php-qrcode',
             'aliases' => array(),
@@ -49,7 +49,7 @@
         'zoeyvid/booking' => array(
             'pretty_version' => 'v0.1.0',
             'version' => '0.1.0.0',
-            'reference' => NULL,
+            'reference' => null,
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
