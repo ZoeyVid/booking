@@ -16,4 +16,4 @@ jobs:
           check_filenames: true
           check_hidden: true
           skip: .git,.gitignore,vendor
-          ignore_words_list: oder,variablen,ist
+          ignore_words_list: oder,variablen,ist,adresse,vor,deine 
