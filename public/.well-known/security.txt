@@ -7,8 +7,8 @@ Preferred-Languages: de, en
 Canonical: https://raw.githubusercontent.com/ZoeyVid/booking/refs/heads/main/public/.well-known/security.txt
 -----BEGIN PGP SIGNATURE-----
 
-iHUEARYKAB0WIQTLgVQUaSqtse3eaSkCo5GetPZzKAUCZ3+tIwAKCRACo5GetPZz
-KBONAQDNffjWGrwHNSJfi8aAIt74aKaQP5ChxQHPX2gOupiRcAEA9k+VfvqdLPPV
-OQH72QURrIKVQQUkmZ7/6cC7LBgO+Ag=
-=6sJf
+iHUEARYKAB0WIQQZsl0LheH0mUz2hsVuOQn3bP/+fAUCZ3+uVwAKCRBuOQn3bP/+
+fMmFAP92cUdULpQ2pFKWC5orB/5cEvjrfpELdMCvc3aEpLwUhQEA4lcRdsrN2c+I
+RVv0i7bMwp5IpKp/VuEW8/t/X6tP+QE=
+=h82y
 -----END PGP SIGNATURE-----
