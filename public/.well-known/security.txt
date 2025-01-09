@@ -1,0 +1,14 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Contact: mailto:zoeyvid@zvcdn.de
+Encryption: https://zvcdn.de/publickey.asc
+Preferred-Languages: de, en
+Canonical: https://raw.githubusercontent.com/ZoeyVid/booking/refs/heads/main/public/security.txt
+-----BEGIN PGP SIGNATURE-----
+
+iHUEARYKAB0WIQTLgVQUaSqtse3eaSkCo5GetPZzKAUCZ3+syQAKCRACo5GetPZz
+KFwbAQDXh0fMD7ClrQROyfFYu9WUrEg5acFq6nsccFKK8N8hxgEAvk54CKBngXl5
+HpOBWewNYo99MWvZOrl8le7BbDJDgQY=
+=JRsn
+-----END PGP SIGNATURE-----
