@@ -173,7 +173,7 @@ if ($sendpswd !== "") {
                             $html = str_replace("?nn?", $row["nn"], $html);
                             $html = str_replace("?bookinglink?", '<a href="https://' . $host . "?bookingtoken=" . $row["bookingtoken"] . '">https://' . $host . "?bookingtoken=" . $row["bookingtoken"] . "</a>", $html);
                             $html = str_replace("?stornolink?", '<a href="https://' . $host . "?stornotoken=" . $row["stornotoken"] . '">https://' . $host . "?stornotoken=" . $row["stornotoken"] . "</a>", $html);
-                            $html = str_replace("?qrcode?", '<img src="' . (new QRCode())->render("https://" . $host . "/check?pin=" . $row["pin"]) . '" style="width: 25%" alt="QRCode"/>', $html);
+                            $html = str_replace("?qrcode?", '<img src="' . new QRCode()->render("https://" . $host . "/check?pin=" . $row["pin"]) . '" style="width: 25%" alt="QRCode"/>', $html);
                             if ($enyear) {
                                 $html = str_replace("?year?", $row["year"], $html);
                             }

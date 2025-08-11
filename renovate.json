@@ -1,7 +1,5 @@
 {
-  "extends": [
-    "config:recommended"
-  ],
+  "extends": ["config:recommended"],
   "baseBranches": [],
   "forkProcessing": "enabled",
   "lockFileMaintenance": {

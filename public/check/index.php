@@ -123,11 +123,7 @@ if ($checkpswd !== "") {
         }
         $pin = $_POST["pin"];
         $recaptcha = new ReCaptcha($recaptcha_secret);
-        $responseData = $recaptcha
-            ->setExpectedHostname($host)
-            ->setExpectedAction("check")
-            ->setScoreThreshold($recaptcha_score)
-            ->verify($_POST["g-recaptcha-response"], $_SERVER["REMOTE_ADDR"]);
+        $responseData = $recaptcha->setExpectedHostname($host)->setExpectedAction("check")->setScoreThreshold($recaptcha_score)->verify($_POST["g-recaptcha-response"], $_SERVER["REMOTE_ADDR"]);
         $query = $db->prepare("SELECT * FROM People WHERE pin=:pin AND cf = true");
         $query->bindValue(":pin", $pin);
         if (!$responseData->isSuccess()) {
