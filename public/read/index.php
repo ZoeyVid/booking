@@ -28,12 +28,12 @@ $err = " Fehler! Wenn dieser Fehler öfter auftritt bitte bei " . $err_support .
 date_default_timezone_set($tz);
 require "../../vendor/autoload.php";
 use PHPMailer\PHPMailer\PHPMailer;
+PHPMailer::setLanguage("de", "../../vendor/phpmailer/phpmailer/language");
 
 if ($readpswd !== "") {
 
     $mail = new PHPMailer();
     $mail->isSMTP();
-    $mail->setLanguage("de", "../../vendor/phpmailer/phpmailer/language");
     $mail->CharSet = PHPMailer::CHARSET_UTF8;
     if ($mail_encryption == "tls") {
         $mail_encryption = PHPMailer::ENCRYPTION_STARTTLS;
@@ -241,3 +241,4 @@ if (!empty($msg)) {
 </div>
 </body>
 </html>
+
