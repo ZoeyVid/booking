@@ -42,9 +42,9 @@ $free = $max - $db->querySingle("SELECT COUNT(*) FROM People WHERE cf = true");
 use chillerlan\QRCode\QRCode;
 
 use PHPMailer\PHPMailer\PHPMailer;
+PHPMailer::setLanguage("de", "../../vendor/phpmailer/phpmailer/language");
 $mail = new PHPMailer();
 $mail->isSMTP();
-$mail->setLanguage("de", "../vendor/phpmailer/phpmailer/language");
 $mail->CharSet = PHPMailer::CHARSET_UTF8;
 
 if ($mail_encryption == "tls") {
@@ -373,3 +373,4 @@ if (!empty($msg)) {
 </div>
 </body>
 </html>
+
