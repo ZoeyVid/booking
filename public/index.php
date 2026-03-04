@@ -114,28 +114,29 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $free > 0 && !array_key_exists("boo
         } elseif (!PHPMailer::validateAddress($email)) {
             $msg = "Die eingegebene E-Mail Adresse ist ungültig!" . $err;
         } elseif (is_array($query->execute()->fetchArray())) {
-            if (!$query->execute()->fetchArray()["cf"]) {
+            $row = $query->execute()->fetchArray();
+            if (!$row["cf"]) {
                 $msg = "Es liegt bereits eine NICHT bestätigte Reservierung für diese E-Mail-Adresse vor, bitte Bestätige diese! Falls du keine E-Mail erhalten hast melde dich bitte bei: " . $err_support;
-            } elseif ($query->execute()->fetchArray()["cf"]) {
+            } elseif ($row["cf"]) {
                 $msg = 'Es liegt bereits eine bestätigte Reservierung für diese E-Mai-Adresse vor, bitte nutze eine andere E-Mail-Adresse wenn du einen weiteren Platz reservieren willst! Wenn du deine Reservierung stornieren willst verwende bitte den Storno-Link in deiner Reservierungsbestätigung! Bitte denk daran auf der Stornierungsseite den Knopf "Stornierung bestätigen!" zu drücken! Hilfe bekommst du auch bei: ' . $err_support;
             } else {
                 $msg = 'Es liegt bereits eine Reservierung für diese E-Mai-Adresse vor, bitte nutze eine andere E-Mail-Adresse wenn du einen weiteren Platz reservieren willst! Wenn du deine Reservierung stornieren willst verwende bitte den Storno-Link in deiner Reservierungsbestätigung! Bitte denk daran auf der Stornierungsseite den Knopf "Stornierung bestätigen!" zu drücken! Hilfe bekommst du auch bei: ' . $err_support;
             }
         } else {
             do {
-                $bookingtoken = rand(100000, 999999) . rand(100000, 999999) . rand(100000, 999999) . rand(100000, 999999) . rand(100000, 999999);
+                $bookingtoken = sprintf('%015d%015d', random_int(0, 999999999999999), random_int(0, 999999999999999));
                 $query = $db->prepare("SELECT * FROM People WHERE bookingtoken=:bookingtoken");
                 $query->bindValue(":bookingtoken", $bookingtoken);
             } while (is_array($query->execute()->fetchArray()));
 
             do {
-                $stornotoken = rand(100000, 999999) . rand(100000, 999999) . rand(100000, 999999) . rand(100000, 999999) . rand(100000, 999999);
+                $stornotoken = sprintf('%015d%015d', random_int(0, 999999999999999), random_int(0, 999999999999999));
                 $query = $db->prepare("SELECT * FROM People WHERE stornotoken=:stornotoken");
                 $query->bindValue(":stornotoken", $stornotoken);
             } while (is_array($query->execute()->fetchArray()));
 
             do {
-                $pin = rand(0, 9) . rand(0, 9) . rand(0, 9) . rand(0, 9) . rand(0, 9) . rand(0, 9);
+                $pin = sprintf('%06d', random_int(0, 999999));
                 $query = $db->prepare("SELECT * FROM People WHERE pin=:pin");
                 $query->bindValue(":pin", $pin);
             } while (is_array($query->execute()->fetchArray()));
@@ -375,5 +376,6 @@ if (!empty($msg)) {
 </div>
 </body>
 </html>
+
 
 
