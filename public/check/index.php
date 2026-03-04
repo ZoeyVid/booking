@@ -145,8 +145,8 @@ if ($checkpswd !== "") {
         } else {
             if (!$_SESSION["auth"]) {
                 session_regenerate_id(true);
-                $_SESSION["auth"] = true; 
-            }?>
+                $_SESSION["auth"] = true;
+            } ?>
 
 <div style="display: flex; justify-content: center;">
     <table style="align-self: center;">
