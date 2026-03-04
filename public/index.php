@@ -173,13 +173,14 @@ if (array_key_exists("bookingtoken", $_GET) && $_SERVER["REQUEST_METHOD"] === "G
     if ($free > 0) {
         $query = $db->prepare("SELECT * FROM People WHERE bookingtoken=:bookingtoken AND cf = false");
         $query->bindValue(":bookingtoken", $_GET["bookingtoken"]);
-        if (is_array($query->execute()->fetchArray())) {
-            $email = $query->execute()->fetchArray()["email"];
-            $pin = $query->execute()->fetchArray()["pin"];
-            $vn = $query->execute()->fetchArray()["vn"];
-            $nn = $query->execute()->fetchArray()["nn"];
-            $stornotoken = $query->execute()->fetchArray()["stornotoken"];
-            $year = $query->execute()->fetchArray()["year"];
+        $row = $query->execute()->fetchArray();
+        if (is_array($row)) {
+            $email = $row["email"];
+            $pin = $row["pin"];
+            $vn = $row["vn"];
+            $nn = $row["nn"];
+            $stornotoken = $row["stornotoken"];
+            $year = $row["year"];
             if (empty($year)) {
                 $yeartxt = "";
             } else {
@@ -238,11 +239,12 @@ if (array_key_exists("stornotoken", $_GET)) {
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $query = $db->prepare("SELECT * FROM People WHERE stornotoken=:stornotoken");
         $query->bindValue(":stornotoken", $_GET["stornotoken"]);
-        if (is_array($query->execute()->fetchArray())) {
-            $email = $query->execute()->fetchArray()["email"];
-            $vn = $query->execute()->fetchArray()["vn"];
-            $nn = $query->execute()->fetchArray()["nn"];
-            $year = $query->execute()->fetchArray()["year"];
+        $row = $query->execute()->fetchArray();
+        if (is_array($row)) {
+            $email =$row["email"];
+            $vn = $row["vn"];
+            $nn = $row["nn"];
+            $year = $row["year"];
             if (empty($year)) {
                 $yeartxt = "";
             } else {
@@ -373,4 +375,5 @@ if (!empty($msg)) {
 </div>
 </body>
 </html>
+
 
