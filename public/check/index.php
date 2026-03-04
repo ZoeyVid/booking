@@ -181,7 +181,7 @@ if (!$query->execute()) {
     }
 } ?>
     <form method="post" id="checker">
-        <label for="pin">PIN: </label><input value="<?php echo $vp; ?>" type="text" name="pin" id="pin" maxlength="6" required><br>
+        <label for="pin">PIN: </label><input value="<?php echo htmlspecialchars($vp); ?>" type="text" name="pin" id="pin" maxlength="6" required><br>
         <?php if (!$_SESSION["auth"]) { ?>
             <label for="pswd">Passwort: </label><input type="password" name="pswd" id="pswd" maxlength="255" required><br>
         <?php } ?>
@@ -199,5 +199,6 @@ if (!empty($msg)) {
 </div>
 </body>
 </html>
+
 
 
