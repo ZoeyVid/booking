@@ -74,7 +74,6 @@ if ($checkpswd !== "") {
         "cookie_secure" => true,
         "cookie_httponly" => true,
         "cookie_samesite" => "Strict",
-        "cookie_domain" => $host,
     ]);
 
     if (!array_key_exists("auth", $_SESSION)) {
@@ -200,4 +199,5 @@ if (!empty($msg)) {
 </div>
 </body>
 </html>
+
 
