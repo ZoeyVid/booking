@@ -124,19 +124,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $free > 0 && !array_key_exists("boo
             }
         } else {
             do {
-                $bookingtoken = sprintf('%015d%015d', random_int(0, 999999999999999), random_int(0, 999999999999999));
+                $bookingtoken = sprintf("%015d%015d", random_int(0, 999999999999999), random_int(0, 999999999999999));
                 $query = $db->prepare("SELECT * FROM People WHERE bookingtoken=:bookingtoken");
                 $query->bindValue(":bookingtoken", $bookingtoken);
             } while (is_array($query->execute()->fetchArray()));
 
             do {
-                $stornotoken = sprintf('%015d%015d', random_int(0, 999999999999999), random_int(0, 999999999999999));
+                $stornotoken = sprintf("%015d%015d", random_int(0, 999999999999999), random_int(0, 999999999999999));
                 $query = $db->prepare("SELECT * FROM People WHERE stornotoken=:stornotoken");
                 $query->bindValue(":stornotoken", $stornotoken);
             } while (is_array($query->execute()->fetchArray()));
 
             do {
-                $pin = sprintf('%06d', random_int(0, 999999));
+                $pin = sprintf("%06d", random_int(0, 999999));
                 $query = $db->prepare("SELECT * FROM People WHERE pin=:pin");
                 $query->bindValue(":pin", $pin);
             } while (is_array($query->execute()->fetchArray()));
