@@ -241,7 +241,7 @@ if (array_key_exists("stornotoken", $_GET)) {
         $query->bindValue(":stornotoken", $_GET["stornotoken"]);
         $row = $query->execute()->fetchArray();
         if (is_array($row)) {
-            $email =$row["email"];
+            $email = $row["email"];
             $vn = $row["vn"];
             $nn = $row["nn"];
             $year = $row["year"];
