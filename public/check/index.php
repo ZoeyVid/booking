@@ -81,6 +81,7 @@ if ($checkpswd !== "") {
     }
 
     if ($_SERVER["REQUEST_METHOD"] === "GET" && array_key_exists("pin", $_GET)) {
+        session_regenerate_id(true);
         $vp = $_GET["pin"];
     } else {
         $vp = "";
@@ -199,6 +200,7 @@ if (!empty($msg)) {
 </div>
 </body>
 </html>
+
 
 
 
