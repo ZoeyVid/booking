@@ -81,7 +81,6 @@ if ($checkpswd !== "") {
     }
 
     if ($_SERVER["REQUEST_METHOD"] === "GET" && array_key_exists("pin", $_GET)) {
-        session_regenerate_id(true);
         $vp = $_GET["pin"];
     } else {
         $vp = "";
@@ -126,9 +125,10 @@ if ($checkpswd !== "") {
         $responseData = $recaptcha->setExpectedHostname($host)->setExpectedAction("check")->setScoreThreshold($recaptcha_score)->verify($_POST["g-recaptcha-response"], $_SERVER["REMOTE_ADDR"]);
         $query = $db->prepare("SELECT * FROM People WHERE pin=:pin AND cf = true");
         $query->bindValue(":pin", $pin);
+        $guest = $query->execute()->fetchArray();
         if (!$responseData->isSuccess()) {
             $msg = "reCAPTCHA ungültig!" . $err;
-        } elseif (!is_array($query->execute()->fetchArray())) {
+        } elseif (!is_array($guest)) {
             $msg = "Die eingegebene PIN ist ungültig!";
             if ($ennotify) {
                 $mail->Subject = "[" . $mail_name . "] ACHTUNG: Erfolgloser Versuch eine PIN zu überprüfen für " . $event;
@@ -143,7 +143,10 @@ if ($checkpswd !== "") {
                 $mail->send();
             }
         } else {
-            $_SESSION["auth"] = true; ?>
+            if (!$_SESSION["auth"]) {
+                session_regenerate_id(true);
+                $_SESSION["auth"] = true; 
+            }?>
 
 <div style="display: flex; justify-content: center;">
     <table style="align-self: center;">
@@ -155,14 +158,14 @@ if ($checkpswd !== "") {
             <th>bereits kontrolliert?</th>
         </tr>
         <tr>
-            <td><?php echo $query->execute()->fetchArray()["pin"]; ?></td>
-            <td><?php echo htmlspecialchars($query->execute()->fetchArray()["vn"]); ?></td>
-            <td><?php echo htmlspecialchars($query->execute()->fetchArray()["nn"]); ?></td>
-            <?php if ($enyear) { ?><td><?php echo htmlspecialchars($query->execute()->fetchArray()["year"]); ?></td><?php } ?>
-            <td><?php if (empty($query->execute()->fetchArray()["cdate"])) {
+            <td><?php echo $guest["pin"]; ?></td>
+            <td><?php echo htmlspecialchars($guest["vn"]); ?></td>
+            <td><?php echo htmlspecialchars($guest["nn"]); ?></td>
+            <?php if ($enyear) { ?><td><?php echo htmlspecialchars($guest["year"]); ?></td><?php } ?>
+            <td><?php if (empty($guest["cdate"])) {
                 echo "Noch nicht kontrolliert!";
             } else {
-                echo "Ja, am " . $query->execute()->fetchArray()["cdate"];
+                echo "Ja, am " . $guest["cdate"];
             } ?></td>
         </tr>
     </table>
@@ -200,6 +203,7 @@ if (!empty($msg)) {
 </div>
 </body>
 </html>
+
 
 
 
