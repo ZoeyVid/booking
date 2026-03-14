@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'chillerlan/php-qrcode' => array(
-            'pretty_version' => '5.0.5',
-            'version' => '5.0.5.0',
-            'reference' => '7b66282572fc14075c0507d74d9837dab25b38d6',
+            'pretty_version' => '6.0.0',
+            'version' => '6.0.0.0',
+            'reference' => '320e5990312295926a8707a0203bf238062b4331',
             'type' => 'library',
             'install_path' => __DIR__ . '/../chillerlan/php-qrcode',
             'aliases' => array(),
