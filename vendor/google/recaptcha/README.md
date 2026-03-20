@@ -1,6 +1,5 @@
 # reCAPTCHA PHP client library
 
-[![Build Status](https://travis-ci.org/google/recaptcha.svg)](https://travis-ci.org/google/recaptcha)
 [![Coverage Status](https://coveralls.io/repos/github/google/recaptcha/badge.svg)](https://coveralls.io/github/google/recaptcha)
 [![Latest Stable Version](https://poser.pugx.org/google/recaptcha/v/stable.svg)](https://packagist.org/packages/google/recaptcha)
 [![Total Downloads](https://poser.pugx.org/google/recaptcha/downloads.svg)](https://packagist.org/packages/google/recaptcha)
@@ -13,7 +12,7 @@ and v3.
 - reCAPTCHA: https://www.google.com/recaptcha
 - This repo: https://github.com/google/recaptcha
 - Hosted demo: https://recaptcha-demo.appspot.com/
-- Version: 1.3.1
+- Version: 1.4.1
 - License: BSD, see [LICENSE](LICENSE)
 
 ## Installation
@@ -26,25 +25,25 @@ Use [Composer](https://getcomposer.org) to install this library from Packagist:
 Run the following command from your project directory to add the dependency:
 
 ```sh
-composer require google/recaptcha "^1.3"
+composer require google/recaptcha "^1.4"
 ```
 
 Alternatively, add the dependency directly to your `composer.json` file:
 
 ```json
 "require": {
-    "google/recaptcha": "^1.3"
+    "google/recaptcha": "^1.4"
 }
 ```
 
 ### Support for earlier versions of PHP
 
-The 1.3 release moves to PHP 8 and up. For earlier versions, you will need to
-stay with the 1.2 releases.
+From the 1.3 release support moved to PHP 8 and up. For earlier versions, you
+will need to stay with the 1.2 releases.
 
 ### Direct download
 
-Download the [ZIP file](https://github.com/google/recaptcha/archive/master.zip)
+Download the [ZIP file](https://github.com/google/recaptcha/archive/main.zip)
 and extract into your project. An autoloader script is provided in
 `src/autoload.php` which you can require into your script. For example:
 
@@ -71,9 +70,9 @@ This library comes in when you need to verify the user's response. On the PHP
 side you need the response from the reCAPTCHA service and secret key from your
 credentials. Instantiate the `ReCaptcha` class with your secret key, specify any
 additional validation rules, and then call `verify()` with the reCAPTCHA
-response (usually in `$_POST['g-recaptcha-response']` or the response from
-`grecaptcha.execute()` in JS which is in `$gRecaptchaResponse` in the example)
-and user's IP address. For example:
+response (usually in `$_POST[\ReCaptcha\ReCaptcha::USER_TOKEN_PARAMETER]` or the
+response from `grecaptcha.execute()` in JS which is in `$gRecaptchaResponse` in
+the example) and user's IP address. For example:
 
 ```php
 <?php
