@@ -47,7 +47,7 @@ class ReCaptcha
      *
      * @var string
      */
-    public const VERSION = 'php_1.4.1';
+    public const VERSION = 'php_1.4.2';
 
     /**
      * URL for reCAPTCHA siteverify API.
@@ -172,7 +172,14 @@ class ReCaptcha
         }
 
         $this->secret = $secret;
-        $this->requestMethod = (is_null($requestMethod)) ? new RequestMethod\Post() : $requestMethod;
+
+        if (!is_null($requestMethod)) {
+            $this->requestMethod = $requestMethod;
+        } elseif (function_exists('curl_version')) {
+            $this->requestMethod = new RequestMethod\CurlPost();
+        } else {
+            $this->requestMethod = new RequestMethod\Post();
+        }
     }
 
     /**
