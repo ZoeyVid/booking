@@ -6,7 +6,7 @@
   "require": {
     "phpmailer/phpmailer": "7.0.2",
     "chillerlan/php-qrcode": "6.0.0",
-    "google/recaptcha": "1.4.1",
+    "google/recaptcha": "1.4.2",
     "ext-sqlite3": "*",
     "ext-curl": "*",
     "ext-ctype": "*",

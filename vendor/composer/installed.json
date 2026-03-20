@@ -171,17 +171,17 @@
         },
         {
             "name": "google/recaptcha",
-            "version": "1.4.1",
-            "version_normalized": "1.4.1.0",
+            "version": "1.4.2",
+            "version_normalized": "1.4.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/google/recaptcha.git",
-                "reference": "b3c936fd5f23bf09bd408d32bf3a52e49b81b973"
+                "reference": "8c021a6df19c49f1ddfae3ee0c28ccffe381db25"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/google/recaptcha/zipball/b3c936fd5f23bf09bd408d32bf3a52e49b81b973",
-                "reference": "b3c936fd5f23bf09bd408d32bf3a52e49b81b973",
+                "url": "https://api.github.com/repos/google/recaptcha/zipball/8c021a6df19c49f1ddfae3ee0c28ccffe381db25",
+                "reference": "8c021a6df19c49f1ddfae3ee0c28ccffe381db25",
                 "shasum": ""
             },
             "require": {
@@ -192,7 +192,7 @@
                 "php-coveralls/php-coveralls": "^2.9",
                 "phpunit/phpunit": "^13"
             },
-            "time": "2026-03-19T21:33:37+00:00",
+            "time": "2026-03-20T13:27:02+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {

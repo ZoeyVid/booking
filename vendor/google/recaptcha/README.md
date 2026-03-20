@@ -9,10 +9,10 @@ This is a PHP library that wraps up the server-side verification step required
 to process responses from the reCAPTCHA service. This client supports both v2
 and v3.
 
-- reCAPTCHA: https://www.google.com/recaptcha
+- reCAPTCHA: https://cloud.google.com/security/products/recaptcha
 - This repo: https://github.com/google/recaptcha
 - Hosted demo: https://recaptcha-demo.appspot.com/
-- Version: 1.4.1
+- Version: 1.4.2
 - License: BSD, see [LICENSE](LICENSE)
 
 ## Installation
@@ -59,8 +59,7 @@ own autoloader or require the needed files directly in your code.
 ## Usage
 
 First obtain the appropriate keys for the type of reCAPTCHA you wish to
-integrate for v2 at https://www.google.com/recaptcha/admin or v3 at
-https://g.co/recaptcha/v3.
+integrate at https://www.google.com/recaptcha/admin.
 
 Then follow the [integration guide on the developer
 site](https://developers.google.com/recaptcha/intro) to add the reCAPTCHA
@@ -90,7 +89,9 @@ The following methods are available:
 
 - `setExpectedHostname($hostname)`: ensures the hostname matches. You must do
   this if you have disabled "Domain/Package Name Validation" for your
-  credentials.
+  credentials. **Note:** if you need to validate against multiple hostnames,
+  do not use this method. Instead, check the `$resp->getHostname()` against
+  your list of allowed hostnames after calling `verify()`.
 - `setExpectedApkPackageName($apkPackageName)`: if you're verifying a response
   from an Android app. Again, you must do this if you have disabled
   "Domain/Package Name Validation" for your credentials.
@@ -120,6 +121,43 @@ if ($resp->isSuccess()) {
 
 You can find the constants for the libraries error codes in the `ReCaptcha`
 class constants, e.g. `ReCaptcha::E_HOSTNAME_MISMATCH`
+
+### Alternate request methods
+
+**Note:** As of version 1.4.2, the default behavior has changed.
+
+By default, the library will attempt to use [cURL](https://secure.php.net/curl) to make the
+POST request to the reCAPTCHA service. This is handled by the
+[`RequestMethod\CurlPost`](./src/ReCaptcha/RequestMethod/CurlPost.php) class.
+If cURL is not available, it will fall back to using
+[`stream_context_create()`](https://secure.php.net/stream_context_create) and
+[`file_get_contents()`](https://secure.php.net/file_get_contents) via the
+[`RequestMethod\Post`](./src/ReCaptcha/RequestMethod/Post.php) class.
+
+To keep the previous behavior of always using `file_get_contents()` regardless of cURL's availability, you can explicitly configure it:
+
+```php
+<?php
+$recaptcha = new \ReCaptcha\ReCaptcha($secret, new \ReCaptcha\RequestMethod\Post());
+```
+
+You may need to use other methods for making requests in your environment. The
+[`ReCaptcha`](./src/ReCaptcha/ReCaptcha.php) class allows an optional
+[`RequestMethod`](./src/ReCaptcha/RequestMethod.php) instance to configure this.
+For example, if you want to force the use of [cURL](https://secure.php.net/curl) you
+can do this:
+
+```php
+<?php
+$recaptcha = new \ReCaptcha\ReCaptcha($secret, new \ReCaptcha\RequestMethod\CurlPost());
+```
+
+Alternatively, you can also use a [socket](https://secure.php.net/fsockopen):
+
+```php
+<?php
+$recaptcha = new \ReCaptcha\ReCaptcha($secret, new \ReCaptcha\RequestMethod\SocketPost());
+```
 
 For more details on usage and structure, see [ARCHITECTURE](ARCHITECTURE.md).
 

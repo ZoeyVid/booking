@@ -214,6 +214,19 @@ class Response
         return $this->action;
     }
 
+    /**
+     * Array representation.
+     *
+     * @return array{
+     *     success: bool,
+     *     hostname: string,
+     *     challenge_ts: string,
+     *     apk_package_name: string,
+     *     score: null|float,
+     *     action: string,
+     *     error-codes: string[]
+     * }
+     */
     public function toArray()
     {
         return [
