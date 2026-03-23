@@ -20,9 +20,9 @@
             'dev_requirement' => false,
         ),
         'chillerlan/php-settings-container' => array(
-            'pretty_version' => '3.2.1',
-            'version' => '3.2.1.0',
-            'reference' => '95ed3e9676a1d47cab2e3174d19b43f5dbf52681',
+            'pretty_version' => '3.3.0',
+            'version' => '3.3.0.0',
+            'reference' => 'a0a487cbf5344f721eb504bf0f59bada40c381b7',
             'type' => 'library',
             'install_path' => __DIR__ . '/../chillerlan/php-settings-container',
             'aliases' => array(),
