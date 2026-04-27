@@ -1,8 +1,11 @@
 # reCAPTCHA PHP client library
 
-[![Coverage Status](https://coveralls.io/repos/github/google/recaptcha/badge.svg)](https://coveralls.io/github/google/recaptcha)
-[![Latest Stable Version](https://poser.pugx.org/google/recaptcha/v/stable.svg)](https://packagist.org/packages/google/recaptcha)
-[![Total Downloads](https://poser.pugx.org/google/recaptcha/downloads.svg)](https://packagist.org/packages/google/recaptcha)
+
+[![Latest stable version](https://poser.pugx.org/google/recaptcha/v/stable.svg)](https://packagist.org/packages/google/recaptcha)
+[![PHP version required](https://poser.pugx.org/google/recaptcha/require/php)](https://packagist.org/packages/google/recaptcha)
+[![Coverage Status](https://coveralls.io/repos/github/google/recaptcha/badge.svg?branch=main)](https://coveralls.io/github/google/recaptcha?branch=main)
+[![Total downloads](https://poser.pugx.org/google/recaptcha/downloads.svg)](https://packagist.org/packages/google/recaptcha)
+[![License](https://poser.pugx.org/google/recaptcha/license.svg)](https://packagist.org/packages/google/recaptcha)
 
 reCAPTCHA is a free CAPTCHA service that protects websites from spam and abuse.
 This is a PHP library that wraps up the server-side verification step required
@@ -12,8 +15,12 @@ and v3.
 - reCAPTCHA: https://cloud.google.com/security/products/recaptcha
 - This repo: https://github.com/google/recaptcha
 - Hosted demo: https://recaptcha-demo.appspot.com/
-- Version: 1.4.2
+- Version: 1.5.0
 - License: BSD, see [LICENSE](LICENSE)
+
+> [!IMPORTANT]
+> **reCAPTCHA Enterprise** is supported via the [Google Cloud Recaptcha Enterprise for
+PHP client](https://docs.cloud.google.com/php/docs/reference/cloud-recaptcha-enterprise/).
 
 ## Installation
 
@@ -124,7 +131,8 @@ class constants, e.g. `ReCaptcha::E_HOSTNAME_MISMATCH`
 
 ### Alternate request methods
 
-**Note:** As of version 1.4.2, the default behavior has changed.
+> [!NOTE]
+> As of version 1.4.2, the default behavior has changed.
 
 By default, the library will attempt to use [cURL](https://secure.php.net/curl) to make the
 POST request to the reCAPTCHA service. This is handled by the
@@ -182,3 +190,29 @@ project](https://cloud.google.com/appengine/docs/flexible/php/download).
 
 No one ever has enough engineers, so we're very happy to accept contributions
 via Pull Requests. For details, see [CONTRIBUTING](CONTRIBUTING.md)
+
+To set up your local checkout, install the dependencies:
+
+```bash
+composer install
+```
+
+If you add new dependencies to the project, make sure you commit the lock file:
+
+```bash
+composer update
+git add composer.json composer.lock
+```
+
+Before committing code, make sure it meets the quality and formatting standards:
+
+```bash
+composer run phpstan
+composer run lint-fix
+```
+
+Run the tests before submitting. Make sure you add or update tests to cover any changes you make:
+
+```bash
+composer run test
+```

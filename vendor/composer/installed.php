@@ -29,9 +29,9 @@
             'dev_requirement' => false,
         ),
         'google/recaptcha' => array(
-            'pretty_version' => '1.4.2',
-            'version' => '1.4.2.0',
-            'reference' => '8c021a6df19c49f1ddfae3ee0c28ccffe381db25',
+            'pretty_version' => '1.5',
+            'version' => '1.5.0.0',
+            'reference' => 'c57f0b96babc8c9fb64cb555cd7b2c5aadfbe58d',
             'type' => 'library',
             'install_path' => __DIR__ . '/../google/recaptcha',
             'aliases' => array(),
