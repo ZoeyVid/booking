@@ -4,7 +4,7 @@
   "type": "project",
   "homepage": "https://github.com/ZoeyVid/booking",
   "require": {
-    "phpmailer/phpmailer": "7.1.0",
+    "phpmailer/phpmailer": "7.1.1",
     "chillerlan/php-qrcode": "6.0.1",
     "google/recaptcha": "1.5",
     "ext-sqlite3": "*",
